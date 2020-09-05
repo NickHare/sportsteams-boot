@@ -1,42 +1,36 @@
 package nos.sportsteamsboot.controller;
 
-import nos.sportsteamsboot.model.Player;
+import com.fasterxml.jackson.annotation.JsonView;
 import nos.sportsteamsboot.model.Roster;
-import nos.sportsteamsboot.model.Team;
-import nos.sportsteamsboot.repository.PlayerRepository;
-import nos.sportsteamsboot.repository.RosterRepository;
-import nos.sportsteamsboot.repository.TeamRepository;
+import nos.sportsteamsboot.service.RosterService;
+import nos.sportsteamsboot.view.PublicView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
-import java.util.Set;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/rosters")
 public class RosterController {
-    @Autowired RosterRepository rosterRepo;
-    @Autowired PlayerRepository playerRepo;
-    @Autowired TeamRepository teamRepo;
 
-    @GetMapping("/rosters")
+    @Autowired
+    RosterService rosterService;
+
+    @GetMapping("")
+    @JsonView(PublicView.class)
     public Iterable<Roster> getRosters(){
-        return rosterRepo.findAll();
+        return rosterService.getRosters();
     }
 
-    @GetMapping("/test")
-    public Boolean test(){
-        Optional<Player> p = playerRepo.findById(1L);
-        Player player = p.get();
-        Set<Roster> rosters = player.getRosters();
-        int l1 = rosters.size();
-        for (Roster r : rosters){
-            rosters.remove(r);
-        }
-        rosters = player.getRosters();
-        int l2 = rosters.size();
-        playerRepo.save(player);
-        return l2 == l1;
+    @GetMapping("/{id}")
+    @JsonView(PublicView.class)
+    public Roster getRoster(@PathVariable("id") Long id){
+        return rosterService.getRoster(id);
+    }
+
+    @PostMapping("")
+    @JsonView(PublicView.class)
+    public Roster postRoster(@RequestBody @Validated Roster roster){
+        return rosterService.insertRoster(roster);
     }
 
 

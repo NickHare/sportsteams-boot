@@ -3,31 +3,48 @@ package nos.sportsteamsboot.model;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import nos.sportsteamsboot.view.PublicView;
 import nos.sportsteamsboot.view.DetailedView;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Set;
 
+@Entity
 public class Team {
-    @JsonView(PublicView.class) @Id private Long id;
-    @JsonView(PublicView.class) private String name;
-    @JsonView(PublicView.class) Set<Roster> rosters;
-    @JsonView(DetailedView.class) @CreatedDate private Timestamp createdTimestamp;
-    @JsonView(DetailedView.class) @LastModifiedDate private Timestamp modifiedTimestamp;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(PublicView.class)
+    private Long id;
+
+    @NotNull
+    @NotBlank
+    @JsonView(PublicView.class)
+    private String name;
+
+    @CreatedDate
+    @JsonView(DetailedView.class)
+    private Timestamp createdTimestamp;
+
+    @LastModifiedDate
+    @JsonView(DetailedView.class)
+    private Timestamp modifiedTimestamp;
 
     public Team() {}
-    public Team(String name, Set<Roster> rosters){
+    public Team(String name){
         this.name = name;
-        this.rosters = rosters;
     }
-    public Team(Long id, String name, Set<Roster> rosters, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
+    public Team(Long id, String name, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
         this.id = id;
         this.name = name;
-        this.rosters = rosters;
         this.createdTimestamp = createdTimestamp;
         this.modifiedTimestamp = modifiedTimestamp;
     }
@@ -37,9 +54,6 @@ public class Team {
     }
     public String getName() {
         return name;
-    }
-    public Set<Roster> getRosters() {
-        return rosters;
     }
     public Timestamp getCreatedTimestamp() {
         return createdTimestamp;
@@ -53,9 +67,6 @@ public class Team {
     }
     public void setName(String name) {
         this.name = name;
-    }
-    public void setRosters(Set<Roster> rosters) {
-        this.rosters = rosters;
     }
     public void setCreatedTimestamp(Timestamp createdTimestamp) {
         this.createdTimestamp = createdTimestamp;
