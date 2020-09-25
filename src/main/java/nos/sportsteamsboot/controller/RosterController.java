@@ -1,6 +1,7 @@
 package nos.sportsteamsboot.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import nos.sportsteamsboot.client.RestClient;
 import nos.sportsteamsboot.model.Roster;
 import nos.sportsteamsboot.service.RosterService;
 import nos.sportsteamsboot.view.PublicView;
@@ -14,6 +15,9 @@ public class RosterController {
 
     @Autowired
     RosterService rosterService;
+
+    @Autowired
+    RestClient restClient;
 
     @GetMapping("")
     @JsonView(PublicView.class)
@@ -33,5 +37,10 @@ public class RosterController {
         return rosterService.insertRoster(roster);
     }
 
+    @GetMapping("/test")
+    @JsonView(PublicView.class)
+    public String test(){
+        return restClient.getResults();
+    }
 
 }
