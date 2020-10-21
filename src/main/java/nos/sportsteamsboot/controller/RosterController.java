@@ -1,13 +1,17 @@
 package nos.sportsteamsboot.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import nos.sportsteamsboot.client.RestClient;
+import nos.sportsteamsboot.client.NbaRestClient;
+import nos.sportsteamsboot.model.BaseModel;
 import nos.sportsteamsboot.model.Roster;
 import nos.sportsteamsboot.service.RosterService;
 import nos.sportsteamsboot.view.PublicView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/rosters")
@@ -17,7 +21,7 @@ public class RosterController {
     RosterService rosterService;
 
     @Autowired
-    RestClient restClient;
+    NbaRestClient restClient;
 
     @GetMapping("")
     @JsonView(PublicView.class)
@@ -39,8 +43,24 @@ public class RosterController {
 
     @GetMapping("/test")
     @JsonView(PublicView.class)
-    public String test(){
-        return restClient.getResults();
+    public Map<String, List<BaseModel>> test(){
+        try{
+            return restClient.getResults();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @GetMapping("/scores")
+    @JsonView(PublicView.class)
+    public String score(){
+        try{
+            return restClient.getScores();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

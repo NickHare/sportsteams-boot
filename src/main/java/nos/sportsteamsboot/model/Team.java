@@ -18,61 +18,30 @@ import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
-public class Team {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(PublicView.class)
-    private Long id;
+public class Team extends BaseModel{
+    public static final Team EmptyTeam = new Team(null, null, "", null, null);
 
     @NotNull
     @NotBlank
     @JsonView(PublicView.class)
     private String name;
 
-    @CreatedDate
-    @JsonView(DetailedView.class)
-    private Timestamp createdTimestamp;
-
-    @LastModifiedDate
-    @JsonView(DetailedView.class)
-    private Timestamp modifiedTimestamp;
-
     public Team() {}
-    public Team(String name){
-        this.name = name;
-    }
-    public Team(Long id, String name, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
+    public Team(Long id, String externalId, String name, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
         this.id = id;
+        this.externalId = externalId;
         this.name = name;
         this.createdTimestamp = createdTimestamp;
         this.modifiedTimestamp = modifiedTimestamp;
     }
 
-    public Long getId() {
-        return id;
-    }
+
     public String getName() {
         return name;
     }
-    public Timestamp getCreatedTimestamp() {
-        return createdTimestamp;
-    }
-    public Timestamp getModifiedTimestamp() {
-        return modifiedTimestamp;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
     public void setName(String name) {
         this.name = name;
-    }
-    public void setCreatedTimestamp(Timestamp createdTimestamp) {
-        this.createdTimestamp = createdTimestamp;
-    }
-    public void setModifiedTimestamp(Timestamp modifiedTimestamp) {
-        this.modifiedTimestamp = modifiedTimestamp;
     }
 
     public String toString(){

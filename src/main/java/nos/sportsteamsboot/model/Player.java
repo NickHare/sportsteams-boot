@@ -18,32 +18,23 @@ import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Entity
-public class Player {
+public class Player extends BaseModel {
+    public static final Player EmptyPlayer = new Player(null, null, "", null, null);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(PublicView.class)
-    private Long id;
+    protected Long id;
 
     @NotNull
     @NotBlank
     @JsonView(PublicView.class)
     private String name;
 
-    @CreatedDate
-    @JsonView(DetailedView.class)
-    private Timestamp createdTimestamp;
-
-    @LastModifiedDate
-    @JsonView(DetailedView.class)
-    private Timestamp modifiedTimestamp;
-
     public Player() {}
-    public Player(String name) {
-        this.name = name;
-    }
-    public Player(Long id, String name, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
+    public Player(Long id, String externalId, String name, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
         this.id = id;
+        this.externalId = externalId;
         this.name = name;
         this.createdTimestamp = createdTimestamp;
         this.modifiedTimestamp = modifiedTimestamp;
@@ -55,24 +46,12 @@ public class Player {
     public String getName() {
         return name;
     }
-    public Timestamp getCreatedTimestamp() {
-        return createdTimestamp;
-    }
-    public Timestamp getModifiedTimestamp() {
-        return modifiedTimestamp;
-    }
 
     public void setId(Long id) {
         this.id = id;
     }
     public void setName(String name) {
         this.name = name;
-    }
-    public void setCreatedTimestamp(Timestamp createdTimestamp) {
-        this.createdTimestamp = createdTimestamp;
-    }
-    public void setModifiedTimestamp(Timestamp modifiedTimestamp) {
-        this.modifiedTimestamp = modifiedTimestamp;
     }
 
     public String toString(){

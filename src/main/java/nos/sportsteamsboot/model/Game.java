@@ -15,12 +15,8 @@ import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Entity
-public class Game {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(PublicView.class)
-    private Long id;
+public class Game extends BaseModel{
+    public static final Game EmptyGame = new Game(null, null, null, null, 0, 0, "", null, null, null);
 
     @JsonView(PublicView.class)
     private Long homeTeamId;
@@ -43,25 +39,10 @@ public class Game {
     @JsonView(PublicView.class)
     private Timestamp startTimestamp;
 
-    @CreatedDate
-    @JsonView(DetailedView.class)
-    private Timestamp createdTimestamp;
-
-    @LastModifiedDate
-    @JsonView(DetailedView.class)
-    private Timestamp modifiedTimestamp;
-
     public Game() {}
-    public Game(Long homeTeamId, Long awayTeamId, Integer homeScore, Integer awayScore, String status, Timestamp startTimestamp){
-        this.homeTeamId = homeTeamId;
-        this.awayTeamId = awayTeamId;
-        this.homeScore = homeScore;
-        this.awayScore = awayScore;
-        this.status = status;
-        this.startTimestamp = startTimestamp;
-    }
-    public Game(Long id, Long homeTeamId, Long awayTeamId, Integer homeScore, Integer awayScore, String status, Timestamp startTimestamp, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
+    public Game(Long id, String externalId, Long homeTeamId, Long awayTeamId, Integer homeScore, Integer awayScore, String status, Timestamp startTimestamp, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
         this.id = id;
+        this.externalId = externalId;
         this.homeTeamId = homeTeamId;
         this.awayTeamId = awayTeamId;
         this.homeScore = homeScore;
@@ -72,9 +53,6 @@ public class Game {
         this.modifiedTimestamp = modifiedTimestamp;
     }
 
-    public Long getId() {
-        return id;
-    }
     public Long getHomeTeamId() {
         return homeTeamId;
     }
@@ -93,16 +71,7 @@ public class Game {
     public Timestamp getStartTimestamp() {
         return startTimestamp;
     }
-    public Timestamp getCreatedTimestamp() {
-        return createdTimestamp;
-    }
-    public Timestamp getModifiedTimestamp() {
-        return modifiedTimestamp;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
     public void setHomeTeamId(Long homeTeamId) {
         this.homeTeamId = homeTeamId;
     }
@@ -120,12 +89,6 @@ public class Game {
     }
     public void setStartTimestamp(Timestamp startTimestamp) {
         this.startTimestamp = startTimestamp;
-    }
-    public void setCreatedTimestamp(Timestamp createdTimestamp) {
-        this.createdTimestamp = createdTimestamp;
-    }
-    public void setModifiedTimestamp(Timestamp modifiedTimestamp) {
-        this.modifiedTimestamp = modifiedTimestamp;
     }
 
     public String toString(){

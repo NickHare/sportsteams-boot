@@ -14,7 +14,7 @@ public class PlayerService {
         try {
             p = playerRepository.save(player);
         } catch(Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
         return p;
     }
@@ -22,9 +22,9 @@ public class PlayerService {
     public Player getPlayer(Long id){
         Player p = null;
         try {
-            p = playerRepository.findById(id).orElse(new Player(""));
+            p = playerRepository.findById(id).orElse(Player.EmptyPlayer);
         } catch(Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
         return p;
     }
@@ -34,7 +34,7 @@ public class PlayerService {
         try {
             p = playerRepository.findAll();
         } catch(Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
         return p;
     }

@@ -15,7 +15,7 @@ public class TeamService {
         try {
             t = teamRepository.save(team);
         } catch(Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
         return t;
     }
@@ -23,9 +23,19 @@ public class TeamService {
     public Team getTeam(Long id){
         Team t = null;
         try {
-            t = teamRepository.findById(id).orElse(new Team(""));
+            t = teamRepository.findById(id).orElse(Team.EmptyTeam);
         } catch(Exception e){
-            System.out.println(e);
+            e.printStackTrace();
+        }
+        return t;
+    }
+
+    public Team getTeamByName(String name){
+        Team t = null;
+        try {
+            t = teamRepository.findByName(name);
+        } catch(Exception e){
+            e.printStackTrace();
         }
         return t;
     }
@@ -35,7 +45,7 @@ public class TeamService {
         try {
             t = teamRepository.findAll();
         } catch(Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
         return t;
     }
