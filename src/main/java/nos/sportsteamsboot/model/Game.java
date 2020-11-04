@@ -41,16 +41,13 @@ public class Game extends BaseModel{
 
     public Game() {}
     public Game(Long id, String externalId, Long homeTeamId, Long awayTeamId, Integer homeScore, Integer awayScore, String status, Timestamp startTimestamp, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
-        this.id = id;
-        this.externalId = externalId;
+        super(id, externalId, createdTimestamp, modifiedTimestamp);
         this.homeTeamId = homeTeamId;
         this.awayTeamId = awayTeamId;
         this.homeScore = homeScore;
         this.awayScore = awayScore;
         this.status = status;
         this.startTimestamp = startTimestamp;
-        this.createdTimestamp = createdTimestamp;
-        this.modifiedTimestamp = modifiedTimestamp;
     }
 
     public Long getHomeTeamId() {

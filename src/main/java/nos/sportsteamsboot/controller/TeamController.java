@@ -1,10 +1,9 @@
 package nos.sportsteamsboot.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import nos.sportsteamsboot.model.Player;
 import nos.sportsteamsboot.model.Team;
 import nos.sportsteamsboot.service.TeamService;
-import nos.sportsteamsboot.view.PublicView;
+import nos.sportsteamsboot.view.DetailedView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,19 +14,19 @@ public class TeamController {
     @Autowired TeamService teamService;
 
     @GetMapping("")
-    @JsonView(PublicView.class)
+    @JsonView(DetailedView.class)
     public Iterable<Team> getTeams(){
         return teamService.getTeams();
     }
 
     @GetMapping("/{id}")
-    @JsonView(PublicView.class)
+    @JsonView(DetailedView.class)
     public Team getTeam(@PathVariable("id") Long id){
         return teamService.getTeam(id);
     }
 
     @PostMapping("")
-    @JsonView(PublicView.class)
+    @JsonView(DetailedView.class)
     public Team postTeam(@RequestBody @Validated Team team){
         return teamService.insertTeam(team);
     }

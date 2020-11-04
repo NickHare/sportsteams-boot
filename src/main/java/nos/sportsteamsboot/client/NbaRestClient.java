@@ -62,7 +62,7 @@ public class NbaRestClient {
             List<Player> players = populatePlayers(teamName);
             List<Roster> rosters = populateRosters(team, players);
             teamList.add(team);
-            playerList.addAll(players);
+//            playerList.addAll(players);
             rosterList.addAll(rosters);
         }
         results.put("teams", teamList);

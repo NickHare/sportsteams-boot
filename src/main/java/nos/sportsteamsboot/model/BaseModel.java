@@ -5,11 +5,13 @@ import nos.sportsteamsboot.view.DetailedView;
 import nos.sportsteamsboot.view.PublicView;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 public abstract class BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +24,16 @@ public abstract class BaseModel {
 
     @LastModifiedDate
     protected Timestamp modifiedTimestamp;
+
+    public BaseModel(){
+
+    }
+    public BaseModel(Long id, String externalId, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
+        this.id = id;
+        this.externalId = externalId;
+        this.createdTimestamp = createdTimestamp;
+        this.modifiedTimestamp = modifiedTimestamp;
+    }
 
     @JsonView(PublicView.class) public Long getId() {
         return id;

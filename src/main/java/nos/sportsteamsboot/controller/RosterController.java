@@ -5,7 +5,7 @@ import nos.sportsteamsboot.client.NbaRestClient;
 import nos.sportsteamsboot.model.BaseModel;
 import nos.sportsteamsboot.model.Roster;
 import nos.sportsteamsboot.service.RosterService;
-import nos.sportsteamsboot.view.PublicView;
+import nos.sportsteamsboot.view.DetailedView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,25 +24,25 @@ public class RosterController {
     NbaRestClient restClient;
 
     @GetMapping("")
-    @JsonView(PublicView.class)
+    @JsonView(DetailedView.class)
     public Iterable<Roster> getRosters(){
         return rosterService.getRosters();
     }
 
     @GetMapping("/{id}")
-    @JsonView(PublicView.class)
+    @JsonView(DetailedView.class)
     public Roster getRoster(@PathVariable("id") Long id){
         return rosterService.getRoster(id);
     }
 
     @PostMapping("")
-    @JsonView(PublicView.class)
+    @JsonView(DetailedView.class)
     public Roster postRoster(@RequestBody @Validated Roster roster){
         return rosterService.insertRoster(roster);
     }
 
     @GetMapping("/test")
-    @JsonView(PublicView.class)
+    @JsonView(DetailedView.class)
     public Map<String, List<BaseModel>> test(){
         try{
             return restClient.getResults();
@@ -53,7 +53,7 @@ public class RosterController {
     }
 
     @GetMapping("/scores")
-    @JsonView(PublicView.class)
+    @JsonView(DetailedView.class)
     public String score(){
         try{
             return restClient.getScores();

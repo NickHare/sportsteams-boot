@@ -21,11 +21,6 @@ import java.sql.Timestamp;
 public class Player extends BaseModel {
     public static final Player EmptyPlayer = new Player(null, null, "", null, null);
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(PublicView.class)
-    protected Long id;
-
     @NotNull
     @NotBlank
     @JsonView(PublicView.class)
@@ -39,17 +34,19 @@ public class Player extends BaseModel {
         this.createdTimestamp = createdTimestamp;
         this.modifiedTimestamp = modifiedTimestamp;
     }
-
-    public Long getId() {
-        return id;
+    public Player(Player player){
+        if (player == null) throw new IllegalArgumentException("Parameter player for Player constructor cannot be null");
+        this.id = player.id;
+        this.externalId = player.externalId;
+        this.name = player.name;
+        this.createdTimestamp = player.createdTimestamp;
+        this.modifiedTimestamp = player.modifiedTimestamp;
     }
+
     public String getName() {
         return name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
     public void setName(String name) {
         this.name = name;
     }

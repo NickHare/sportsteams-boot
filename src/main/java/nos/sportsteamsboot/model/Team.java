@@ -28,11 +28,8 @@ public class Team extends BaseModel{
 
     public Team() {}
     public Team(Long id, String externalId, String name, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
-        this.id = id;
-        this.externalId = externalId;
+        super(id, externalId, createdTimestamp, modifiedTimestamp);
         this.name = name;
-        this.createdTimestamp = createdTimestamp;
-        this.modifiedTimestamp = modifiedTimestamp;
     }
 
 
