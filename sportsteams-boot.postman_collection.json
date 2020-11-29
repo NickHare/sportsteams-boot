@@ -1,0 +1,400 @@
+{
+	"info": {
+		"_postman_id": "3042b6e6-6231-4bbf-9022-bc029b76c1cd",
+		"name": "sportsteams-boot",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Player",
+			"item": [
+				{
+					"name": "Get Players",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/players",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"players"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Player",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/players/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"players",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Player",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Aaron\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/players",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"players"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Team",
+			"item": [
+				{
+					"name": "Get Teams",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/teams",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"teams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Team",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/teams/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"teams",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Team",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Dragons\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/teams",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"teams"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "be90a1d5-ab3d-4230-97a7-f4e7b6559b30",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0f915eb6-3e8e-4618-9fc1-dbff57138e88",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Game",
+			"item": [
+				{
+					"name": "Get Games",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/games",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"games"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Game",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/games/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"games",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Game",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"homeTeamId\": 3,\r\n    \"awayTeamId\": 1,\r\n    \"homeScore\": 0,\r\n    \"awayScore\": 0,\r\n    \"status\": \"SCHEDULED\",\r\n    \"startTimestamp\": \"1577858400000\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/games",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"games"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b92933f8-2f71-414c-a048-203ee27c9ca7",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "17be0589-2a56-4f38-8614-100fe540de05",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Roster",
+			"item": [
+				{
+					"name": "Get Rosters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/rosters",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"rosters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Roster",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/rosters/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"rosters",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Roster",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"playerId\": 4,\r\n    \"teamId\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/rosters",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"rosters"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "be2fe5a8-b056-4392-b1b5-f75c489aedf5",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "f34534dc-8057-4f32-9295-c51282c8e40a",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Test",
+			"item": [
+				{
+					"name": "Get NBA Rosters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/rosters/test",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"rosters",
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get NBA Scores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/rosters/scores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"rosters",
+								"scores"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

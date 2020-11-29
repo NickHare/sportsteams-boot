@@ -28,11 +28,16 @@ public class Roster extends BaseModel{
         this.playerId = playerId;
         this.teamId = teamId;
     }
+    public Roster(Roster roster){
+        super(roster.id, roster.externalId, roster.createdTimestamp, roster.modifiedTimestamp);
+        this.playerId = roster.playerId;
+        this.teamId = roster.teamId;
+    }
 
-    public Long getPlayer() {
+    public Long getPlayerId() {
         return playerId;
     }
-    public Long getTeam() {
+    public Long getTeamId() {
         return teamId;
     }
 

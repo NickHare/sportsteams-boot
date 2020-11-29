@@ -34,6 +34,12 @@ public abstract class BaseModel {
         this.createdTimestamp = createdTimestamp;
         this.modifiedTimestamp = modifiedTimestamp;
     }
+    public BaseModel(BaseModel baseModel){
+        if (baseModel == null) throw new IllegalArgumentException("Parameter baseModel for BaseModel constructor cannot be null");
+        this.externalId = baseModel.externalId;
+        this.createdTimestamp = baseModel.createdTimestamp;
+        this.modifiedTimestamp = baseModel.modifiedTimestamp;
+    }
 
     @JsonView(PublicView.class) public Long getId() {
         return id;
@@ -60,4 +66,5 @@ public abstract class BaseModel {
     public void setModifiedTimestamp(Timestamp modifiedTimestamp) {
         this.modifiedTimestamp = modifiedTimestamp;
     }
+
 }

@@ -11,17 +11,15 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.jdbc.Sql;
 
-import javax.validation.ConstraintViolationException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 @DataJpaTest
 @EnableJpaAuditing
+@Sql({"/destroy.sql", "/schema.sql", "/data.sql"})
 public class PlayerRepositoryTest {
     public static final Map<Long, Player> PLAYER_INITIAL_STATE = RepositoryTestState.PLAYER_INITIAL_STATE;
     public static final Map<Long, Player> PLAYER_INSERT_STATE = RepositoryTestState.PLAYER_INSERT_STATE;
@@ -31,62 +29,37 @@ public class PlayerRepositoryTest {
     @Autowired JdbcTemplate jdbcTemplate;
 
     @Test
-    @DirtiesContext
-    @DisplayName("Insert null and expect DataIntegrityViolationException")
+    @DisplayName("Insert null and expect DataAccessException")
     public void insertNullTest(){
         Assertions.assertThrows(DataAccessException.class, ()->this.playerRepository.save(null));
     }
 
     @ParameterizedTest
-    @DirtiesContext
-    @MethodSource("playersExpectingConstraintViolationException")
-    @DisplayName("Insert Players that expect ConstraintViolationException")
-    public void insertExpectingConstraintViolationException(Player player) {
-        Assertions.assertThrows(ConstraintViolationException.class, ()->this.playerRepository.save(player));
-//            this.playerRepository.save(player);
-//            List<Player> players = this.playerRepository.findAll();
-//            List<Player> p = jdbcTemplate.query("SELECT * FROM player;", new RowMapper<Player>(){
-//                public Player mapRow(ResultSet rs, int r) throws SQLException {
-//                    return new Player(
-//                            rs.getLong("id"),
-//                            rs.getString("external_id"),
-//                            rs.getString("name"),
-//                            rs.getTimestamp("created_timestamp"),
-//                            rs.getTimestamp("modified_timestamp")
-//                    );
-//                }
-//            });
-//            System.out.println("?");
-//        });
+    @MethodSource("playersExpectingDataAccessException")
+    @DisplayName("Insert Players that expect DataAccessException")
+    public void insertExpectingDataAccessException(Player player) {
+        Assertions.assertThrows(DataAccessException.class, ()->this.playerRepository.save(player));
     }
 
-    private static List<Player> playersExpectingConstraintViolationException(){
+    private static List<Player> playersExpectingDataAccessException(){
         return List.of(
-                Player.EmptyPlayer,
-                new Player(null, null, null, null, null)
+                Player.NullPlayer
         );
     }
 
     @Test
-    @DirtiesContext
     @DisplayName("Assert the initial test Players")
     public void initialTest(){
         assertState(PLAYER_INITIAL_STATE);
     }
 
     @Test
-    @DirtiesContext
+    @Rollback
     @DisplayName("Assert the inserted test Players")
     public void insertTest(){
         Player insertedPlayer;
         Player newPlayer1 = new Player(PLAYERS[3]);
         Player newPlayer2 = new Player(PLAYERS[4]);
-        newPlayer1.setId(null);
-        newPlayer1.setCreatedTimestamp(null);
-        newPlayer1.setModifiedTimestamp(null);
-        newPlayer2.setId(null);
-        newPlayer2.setCreatedTimestamp(null);
-        newPlayer2.setModifiedTimestamp(null);
 
         //Assert initial state
         assertState(PLAYER_INITIAL_STATE);
@@ -130,4 +103,20 @@ public class PlayerRepositoryTest {
         //Assertions for Player
         Assertions.assertEquals(expectedPlayer.getName(), actualPlayer.getName());
     }
+
+//            this.playerRepository.save(player);
+//            List<Player> players = this.playerRepository.findAll();
+//            List<Player> p = jdbcTemplate.query("SELECT * FROM player;", new RowMapper<Player>(){
+//                public Player mapRow(ResultSet rs, int r) throws SQLException {
+//                    return new Player(
+//                            rs.getLong("id"),
+//                            rs.getString("external_id"),
+//                            rs.getString("name"),
+//                            rs.getTimestamp("created_timestamp"),
+//                            rs.getTimestamp("modified_timestamp")
+//                    );
+//                }
+//            });
+//            System.out.println("?");
+//        });
 }

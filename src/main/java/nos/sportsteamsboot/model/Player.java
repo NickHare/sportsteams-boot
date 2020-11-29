@@ -20,27 +20,20 @@ import java.sql.Timestamp;
 @Entity
 public class Player extends BaseModel {
     public static final Player EmptyPlayer = new Player(null, null, "", null, null);
+    public static final Player NullPlayer = new Player(null, null, null, null, null);
 
-    @NotNull
-    @NotBlank
     @JsonView(PublicView.class)
     private String name;
 
     public Player() {}
     public Player(Long id, String externalId, String name, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
-        this.id = id;
-        this.externalId = externalId;
+        super(id, externalId, createdTimestamp, modifiedTimestamp);
         this.name = name;
-        this.createdTimestamp = createdTimestamp;
-        this.modifiedTimestamp = modifiedTimestamp;
     }
     public Player(Player player){
+        super(player);
         if (player == null) throw new IllegalArgumentException("Parameter player for Player constructor cannot be null");
-        this.id = player.id;
-        this.externalId = player.externalId;
         this.name = player.name;
-        this.createdTimestamp = player.createdTimestamp;
-        this.modifiedTimestamp = player.modifiedTimestamp;
     }
 
     public String getName() {

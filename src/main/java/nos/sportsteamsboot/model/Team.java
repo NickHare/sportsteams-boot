@@ -21,8 +21,6 @@ import java.util.Set;
 public class Team extends BaseModel{
     public static final Team EmptyTeam = new Team(null, null, "", null, null);
 
-    @NotNull
-    @NotBlank
     @JsonView(PublicView.class)
     private String name;
 
@@ -30,6 +28,11 @@ public class Team extends BaseModel{
     public Team(Long id, String externalId, String name, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
         super(id, externalId, createdTimestamp, modifiedTimestamp);
         this.name = name;
+    }
+    public Team(Team team){
+        super(team);
+        if (team == null) throw new IllegalArgumentException("Parameter team for Team constructor cannot be null");
+        this.name = team.name;
     }
 
 

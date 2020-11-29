@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>React Test</title>
+        <meta charset="UTF-8">
+
+        <link rel="stylesheet" href="http://localhost/static/css/main.css" />
+
+
+        <script src="https://unpkg.com/babel-standalone@6.26.0//babel.js"></script>
+        <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"> </script>
+
+        <script>
+          Babel.registerPreset('react-preset', {
+            presets: [[Babel.availablePresets['es2017'], { modules: false }], [Babel.availablePresets['react']]],
+            plugins: [[Babel.availablePlugins['transform-modules-umd']]]
+          });
+        </script>
+
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/Player.js" data-preset="react-preset"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/Team.js" data-preset="react-preset"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/Roster.js" data-preset="react-preset"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/PlayerList.js" data-preset="react-preset"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/TeamList.js" data-preset="react-preset"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/RosterList.js" data-preset="react-preset"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/App.js" data-preset="react-preset"></script>
+        <script type="text/jsx" src="http://localhost/static/js/main.js" data-preset="react-preset"></script>
+    </head>
+    <body>
+
+        <!-- some HTML -->
+        <div id="sportsteams" className="sportsteams"></div>
+        <!-- some other HTML -->
+    </body>
+</html>
