@@ -11,24 +11,24 @@
         <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
         <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"> </script>
 
-        <script>
-          Babel.registerPreset('react-preset', {
-            presets: [[Babel.availablePresets['es2017'], { modules: false }], [Babel.availablePresets['react']]],
-            plugins: [[Babel.availablePlugins['transform-modules-umd']]]
-          });
-        </script>
+<!--        <script>-->
+<!--          Babel.registerPreset('react-preset', {-->
+<!--            presets: [[Babel.availablePresets['es2017'], { modules: false }], [Babel.availablePresets['react']]],-->
+<!--            plugins: [[Babel.availablePlugins['transform-modules-umd']]]-->
+<!--          });-->
+<!--        </script>-->
+<!--         data-preset="react-preset" -->
 
-        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/Player.js" data-preset="react-preset"></script>
-        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/Team.js" data-preset="react-preset"></script>
-        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/Roster.js" data-preset="react-preset"></script>
-        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/PlayerList.js" data-preset="react-preset"></script>
-        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/TeamList.js" data-preset="react-preset"></script>
-        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/RosterList.js" data-preset="react-preset"></script>
-        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/App.js" data-preset="react-preset"></script>
-        <script type="text/jsx" src="http://localhost/static/js/main.js" data-preset="react-preset"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/Player.js"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/Team.js"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/Roster.js"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/PlayerList.js"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/TeamList.js"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/RosterList.js"></script>
+        <script type="text/babel" data-type="module" src="http://localhost/static/js/react/App.js"></script>
+        <script type="text/jsx" src="http://localhost/static/js/main.js"></script>
     </head>
     <body>
-
         <!-- some HTML -->
         <div id="sportsteams" className="sportsteams"></div>
         <!-- some other HTML -->
