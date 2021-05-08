@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,12 +21,31 @@ import java.util.Map;
 @EnableJpaAuditing
 @Sql({"/destroy.sql", "/schema.sql", "/data.sql"})
 public class PlayerRepositoryTest {
-    public static final Map<Long, Player> PLAYER_INITIAL_STATE = RepositoryTestState.PLAYER_INITIAL_STATE;
-    public static final Map<Long, Player> PLAYER_INSERT_STATE = RepositoryTestState.PLAYER_INSERT_STATE;
-    public static final Player[] PLAYERS = RepositoryTestState.PLAYERS;
+    public static final Player[] PLAYERS = new Player[]{
+            new Player(1L, null, "Alex", null, null),
+            new Player(2L, null, "Dan", null, null),
+            new Player(3L, null, "Nick", null, null),
+            new Player(4L, null, "Aaron", null, null),
+            new Player(5L, null, "Rory", null, null),
+    };
+
+    public static final Map<Long, Player> PLAYER_INITIAL_STATE = new HashMap<>();
+    static {
+        PLAYER_INITIAL_STATE.put(1L, PLAYERS[0]);
+        PLAYER_INITIAL_STATE.put(2L, PLAYERS[1]);
+        PLAYER_INITIAL_STATE.put(3L, PLAYERS[2]);
+    }
+
+    public static final Map<Long, Player> PLAYER_INSERTED_STATE = new HashMap<>();
+    static {
+        PLAYER_INSERTED_STATE.put(1L, PLAYERS[0]);
+        PLAYER_INSERTED_STATE.put(2L, PLAYERS[1]);
+        PLAYER_INSERTED_STATE.put(3L, PLAYERS[2]);
+        PLAYER_INSERTED_STATE.put(4L, PLAYERS[3]);
+        PLAYER_INSERTED_STATE.put(5L, PLAYERS[4]);
+    }
 
     @Autowired PlayerRepository playerRepository;
-    @Autowired JdbcTemplate jdbcTemplate;
 
     @Test
     @DisplayName("Insert null and expect DataAccessException")
@@ -50,7 +69,7 @@ public class PlayerRepositoryTest {
     @Test
     @DisplayName("Assert the initial test Players")
     public void initialTest(){
-        assertState(PLAYER_INITIAL_STATE);
+        assertPlayerState(playerRepository, PLAYER_INITIAL_STATE);
     }
 
     @Test
@@ -62,19 +81,20 @@ public class PlayerRepositoryTest {
         Player newPlayer2 = new Player(PLAYERS[4]);
 
         //Assert initial state
-        assertState(PLAYER_INITIAL_STATE);
+        PlayerRepositoryTest.assertPlayerState(playerRepository, PLAYER_INITIAL_STATE);
 
         //Insert Players and assert
-        insertedPlayer = this.playerRepository.saveAndFlush(newPlayer1);
-        assertPlayer(PLAYERS[3], insertedPlayer);
+        insertedPlayer = this.playerRepository.save(newPlayer1);
+        PlayerRepositoryTest.assertPlayer(PLAYERS[3], insertedPlayer);
         insertedPlayer = this.playerRepository.save(newPlayer2);
-        assertPlayer(PLAYERS[4], insertedPlayer);
+        PlayerRepositoryTest.assertPlayer(PLAYERS[4], insertedPlayer);
+        this.playerRepository.flush();
 
         //Assert inserted state
-        assertState(PLAYER_INSERT_STATE);
+        PlayerRepositoryTest.assertPlayerState(playerRepository, PLAYER_INSERTED_STATE);
     }
 
-    public void assertState(Map<Long, Player> expectedPlayers){
+    public static void assertPlayerState(PlayerRepository playerRepository, Map<Long, Player> expectedPlayers){
         //Get all Players to compare
         List<Player> actualPlayers =  playerRepository.findAll();
 
@@ -93,7 +113,7 @@ public class PlayerRepositoryTest {
         }
     }
 
-    public void assertPlayer(Player expectedPlayer, Player actualPlayer){
+    public static void assertPlayer(Player expectedPlayer, Player actualPlayer){
         //Assertions for every Model (ModelBase)
         Assertions.assertEquals(expectedPlayer.getId(), actualPlayer.getId());
         Assertions.assertEquals(expectedPlayer.getExternalId(), actualPlayer.getExternalId());
@@ -104,19 +124,4 @@ public class PlayerRepositoryTest {
         Assertions.assertEquals(expectedPlayer.getName(), actualPlayer.getName());
     }
 
-//            this.playerRepository.save(player);
-//            List<Player> players = this.playerRepository.findAll();
-//            List<Player> p = jdbcTemplate.query("SELECT * FROM player;", new RowMapper<Player>(){
-//                public Player mapRow(ResultSet rs, int r) throws SQLException {
-//                    return new Player(
-//                            rs.getLong("id"),
-//                            rs.getString("external_id"),
-//                            rs.getString("name"),
-//                            rs.getTimestamp("created_timestamp"),
-//                            rs.getTimestamp("modified_timestamp")
-//                    );
-//                }
-//            });
-//            System.out.println("?");
-//        });
 }

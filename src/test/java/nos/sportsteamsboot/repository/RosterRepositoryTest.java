@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,16 +24,35 @@ import java.util.Map;
 @EnableJpaAuditing
 @Sql({"/destroy.sql", "/schema.sql", "/data.sql"})
 public class RosterRepositoryTest {
-    public static final Map<Long, Roster> ROSTER_INITIAL_STATE = RepositoryTestState.ROSTER_INITIAL_STATE;
-    public static final Map<Long, Roster> ROSTER_INSERT_STATE = RepositoryTestState.ROSTER_INSERT_STATE;
-    public static final Player[] PLAYERS = RepositoryTestState.PLAYERS;
-    public static final Team[] TEAMS = RepositoryTestState.TEAMS;
-    public static final Roster[] ROSTERS = RepositoryTestState.ROSTERS;
+    public static final Player[] PLAYERS = PlayerRepositoryTest.PLAYERS;
+    public static final Team[] TEAMS = TeamRepositoryTest.TEAMS;
+    public static final Roster[] ROSTERS = new Roster[]{
+            new Roster(1L, null, PLAYERS[0],TEAMS[0], null, null),
+            new Roster(2L, null, PLAYERS[1],TEAMS[0], null, null),
+            new Roster(3L, null, PLAYERS[2],TEAMS[1], null, null),
+            new Roster(4L, null, PLAYERS[3],TEAMS[2], null, null),
+            new Roster(5L, null, PLAYERS[4],TEAMS[2], null, null),
+    };
+
+    public static final Map<Long, Roster> ROSTER_INITIAL_STATE = new HashMap<>();
+    static {
+        ROSTER_INITIAL_STATE.put(1L, ROSTERS[0]);
+        ROSTER_INITIAL_STATE.put(2L, ROSTERS[1]);
+        ROSTER_INITIAL_STATE.put(3L, ROSTERS[2]);
+    }
+
+    public static final Map<Long, Roster> ROSTER_INSERT_STATE = new HashMap<>();
+    static {
+        ROSTER_INSERT_STATE.put(1L, ROSTERS[0]);
+        ROSTER_INSERT_STATE.put(2L, ROSTERS[1]);
+        ROSTER_INSERT_STATE.put(3L, ROSTERS[2]);
+        ROSTER_INSERT_STATE.put(4L, ROSTERS[3]);
+        ROSTER_INSERT_STATE.put(5L, ROSTERS[4]);
+    }
 
     @Autowired PlayerRepository playerRepository;
     @Autowired TeamRepository teamRepository;
     @Autowired RosterRepository rosterRepository;
-    @Autowired JdbcTemplate jdbcTemplate;
 
     @Test
     @DisplayName("Insert null and expect DataIntegrityViolationException")
@@ -57,7 +77,7 @@ public class RosterRepositoryTest {
     @Test
     @DisplayName("Assert the initial test Rosters")
     public void initialTest(){
-        assertState(ROSTER_INITIAL_STATE);
+        RosterRepositoryTest.assertRosterState(rosterRepository, ROSTER_INITIAL_STATE);
     }
 
     @Test
@@ -73,24 +93,27 @@ public class RosterRepositoryTest {
         Roster newRoster2 = new Roster(ROSTERS[4]);
 
         //Assert initial state
-        assertState(ROSTER_INITIAL_STATE);
+        RosterRepositoryTest.assertRosterState(rosterRepository, ROSTER_INITIAL_STATE);
 
         //Insert dependant Players and Teams
         this.playerRepository.save(newPlayer1);
         this.playerRepository.save(newPlayer2);
+        this.playerRepository.flush();
         this.teamRepository.save(newTeam);
+        this.teamRepository.flush();
 
         //Insert Rosters and assert
-        insertedRoster = this.rosterRepository.saveAndFlush(newRoster1);
-        assertRoster(ROSTERS[3], insertedRoster);
-        insertedRoster = this.rosterRepository.saveAndFlush(newRoster2);
-        assertRoster(ROSTERS[4], insertedRoster);
+        insertedRoster = this.rosterRepository.save(newRoster1);
+        RosterRepositoryTest.assertRoster(ROSTERS[3], insertedRoster);
+        insertedRoster = this.rosterRepository.save(newRoster2);
+        RosterRepositoryTest.assertRoster(ROSTERS[4], insertedRoster);
+        this.rosterRepository.flush();
 
         //Assert inserted state
-        assertState(ROSTER_INSERT_STATE);
+        RosterRepositoryTest.assertRosterState(rosterRepository, ROSTER_INSERT_STATE);
     }
 
-    public void assertState(Map<Long, Roster> expectedRosters){
+    public static void assertRosterState(RosterRepository rosterRepository, Map<Long, Roster> expectedRosters){
         //Get all Rosters to compare
         List<Roster> actualRosters =  rosterRepository.findAll();
 
@@ -109,7 +132,7 @@ public class RosterRepositoryTest {
         }
     }
 
-    public void assertRoster(Roster expectedRoster, Roster actualRoster){
+    public static void assertRoster(Roster expectedRoster, Roster actualRoster){
         //Assertions for every Model (ModelBase)
         Assertions.assertEquals(expectedRoster.getId(), actualRoster.getId());
         Assertions.assertEquals(expectedRoster.getExternalId(), actualRoster.getExternalId());
@@ -117,23 +140,7 @@ public class RosterRepositoryTest {
         Assertions.assertNotNull(actualRoster.getModifiedTimestamp());
 
         //Assertions for Roster
-        Assertions.assertEquals(expectedRoster.getPlayerId(), actualRoster.getPlayerId());
-        Assertions.assertEquals(expectedRoster.getId(), actualRoster.getId());
+        PlayerRepositoryTest.assertPlayer(expectedRoster.getPlayer(), actualRoster.getPlayer());
+        TeamRepositoryTest.assertTeam(expectedRoster.getTeam(), actualRoster.getTeam());
     }
-
-//            this.rosterRepository.save(roster);
-//            List<Roster> rosters = this.rosterRepository.findAll();
-//            List<Roster> p = jdbcTemplate.query("SELECT * FROM roster;", new RowMapper<Roster>(){
-//                public Roster mapRow(ResultSet rs, int r) throws SQLException {
-//                    return new Roster(
-//                            rs.getLong("id"),
-//                            rs.getString("external_id"),
-//                            rs.getString("name"),
-//                            rs.getTimestamp("created_timestamp"),
-//                            rs.getTimestamp("modified_timestamp")
-//                    );
-//                }
-//            });
-//            System.out.println("?");
-//        });
 }

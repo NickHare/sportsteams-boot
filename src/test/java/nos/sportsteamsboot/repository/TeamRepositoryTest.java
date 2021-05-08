@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,12 +22,26 @@ import java.util.Map;
 @EnableJpaAuditing
 @Sql({"/destroy.sql", "/schema.sql", "/data.sql"})
 public class TeamRepositoryTest {
-    public static final Map<Long, Team> TEAM_INITIAL_STATE = RepositoryTestState.TEAM_INITIAL_STATE;
-    public static final Map<Long, Team> TEAM_INSERT_STATE = RepositoryTestState.TEAM_INSERT_STATE;
-    public static final Team[] TEAMS = RepositoryTestState.TEAMS;
+    public static final Team[] TEAMS = new Team[]{
+            new Team(1L, null, "Easy Company", null, null),
+            new Team(2L, null, "UnEasy Company", null, null),
+            new Team(3L, null, "Dragons", null, null),
+    };
+
+    public static final Map<Long, Team> TEAM_INITIAL_STATE = new HashMap<>();
+    static {
+        TEAM_INITIAL_STATE.put(1L, TEAMS[0]);
+        TEAM_INITIAL_STATE.put(2L, TEAMS[1]);
+    }
+
+    public static final Map<Long, Team> TEAM_INSERT_STATE = new HashMap<>();
+    static {
+        TEAM_INSERT_STATE.put(1L, TEAMS[0]);
+        TEAM_INSERT_STATE.put(2L, TEAMS[1]);
+        TEAM_INSERT_STATE.put(3L, TEAMS[2]);
+    }
 
     @Autowired TeamRepository teamRepository;
-    @Autowired JdbcTemplate jdbcTemplate;
 
     @Test
     @DisplayName("Insert null and expect DataIntegrityViolationException")
@@ -50,7 +65,7 @@ public class TeamRepositoryTest {
     @Test
     @DisplayName("Assert the initial test Teams")
     public void initialTest(){
-        assertState(TEAM_INITIAL_STATE);
+        TeamRepositoryTest.assertTeamState(teamRepository, TEAM_INITIAL_STATE);
     }
 
     @Test
@@ -61,17 +76,18 @@ public class TeamRepositoryTest {
         Team newTeam1 = new Team(TEAMS[2]);
 
         //Assert initial state
-        assertState(TEAM_INITIAL_STATE);
+        TeamRepositoryTest.assertTeamState(teamRepository, TEAM_INITIAL_STATE);
 
         //Insert Teams and assert
-        insertedTeam = this.teamRepository.saveAndFlush(newTeam1);
-        assertTeam(TEAMS[2], insertedTeam);
+        insertedTeam = this.teamRepository.save(newTeam1);
+        this.teamRepository.flush();
+        TeamRepositoryTest.assertTeam(TEAMS[2], insertedTeam);
 
         //Assert inserted state
-        assertState(TEAM_INSERT_STATE);
+        TeamRepositoryTest.assertTeamState(teamRepository, TEAM_INSERT_STATE);
     }
 
-    public void assertState(Map<Long, Team> expectedTeams){
+    public static void assertTeamState(TeamRepository teamRepository, Map<Long, Team> expectedTeams){
         //Get all Teams to compare
         List<Team> actualTeams =  teamRepository.findAll();
 
@@ -90,7 +106,7 @@ public class TeamRepositoryTest {
         }
     }
 
-    public void assertTeam(Team expectedTeam, Team actualTeam){
+    public static void assertTeam(Team expectedTeam, Team actualTeam){
         //Assertions for every Model (ModelBase)
         Assertions.assertEquals(expectedTeam.getId(), actualTeam.getId());
         Assertions.assertEquals(expectedTeam.getExternalId(), actualTeam.getExternalId());
@@ -100,20 +116,4 @@ public class TeamRepositoryTest {
         //Assertions for Team
         Assertions.assertEquals(expectedTeam.getName(), actualTeam.getName());
     }
-
-//            this.teamRepository.save(team);
-//            List<Team> teams = this.teamRepository.findAll();
-//            List<Team> p = jdbcTemplate.query("SELECT * FROM team;", new RowMapper<Team>(){
-//                public Team mapRow(ResultSet rs, int r) throws SQLException {
-//                    return new Team(
-//                            rs.getLong("id"),
-//                            rs.getString("external_id"),
-//                            rs.getString("name"),
-//                            rs.getTimestamp("created_timestamp"),
-//                            rs.getTimestamp("modified_timestamp")
-//                    );
-//                }
-//            });
-//            System.out.println("?");
-//        });
 }

@@ -98,8 +98,8 @@ public class NbaRestClient {
         List<Roster> rosters = new ArrayList<>();
         for (Player player : players){
             Roster roster = new Roster();
-            roster.setPlayer(player.getId());
-            roster.setTeam(team.getId());
+            roster.setPlayer(player);
+            roster.setTeam(team);
             rosterService.insertRoster(roster);
             rosters.add(roster);
         }

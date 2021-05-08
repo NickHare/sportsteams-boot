@@ -7,6 +7,7 @@ import nos.sportsteamsboot.model.Roster;
 import nos.sportsteamsboot.service.RosterService;
 import nos.sportsteamsboot.view.DetailedView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,9 @@ public class RosterController {
 
     @Autowired
     RosterService rosterService;
+
+    @Autowired
+    JdbcTemplate jt;
 
     @Autowired
     NbaRestClient restClient;

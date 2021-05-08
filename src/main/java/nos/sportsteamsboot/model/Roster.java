@@ -2,11 +2,7 @@ package nos.sportsteamsboot.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
 import nos.sportsteamsboot.view.PublicView;
-import nos.sportsteamsboot.view.DetailedView;
 
 import javax.persistence.*;
 
@@ -17,38 +13,40 @@ public class Roster extends BaseModel{
     public static final Roster EmptyRoster = new Roster(null, null, null, null, null, null);
 
     @JsonView(PublicView.class)
-    private Long playerId;
+    @ManyToOne
+    private Player player;
 
     @JsonView(PublicView.class)
-    private Long teamId;
+    @ManyToOne
+    private Team team;
 
     public Roster() {}
-    public Roster(Long id, String externalId, Long playerId, Long teamId, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
+    public Roster(Long id, String externalId, Player player, Team team, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
         super(id, externalId, createdTimestamp, modifiedTimestamp);
-        this.playerId = playerId;
-        this.teamId = teamId;
+        this.player = player;
+        this.team = team;
     }
     public Roster(Roster roster){
         super(roster.id, roster.externalId, roster.createdTimestamp, roster.modifiedTimestamp);
-        this.playerId = roster.playerId;
-        this.teamId = roster.teamId;
+        this.player = roster.player;
+        this.team = roster.team;
     }
 
-    public Long getPlayerId() {
-        return playerId;
+    public Player getPlayer() {
+        return player;
     }
-    public Long getTeamId() {
-        return teamId;
+    public Team getTeam() {
+        return team;
     }
 
-    public void setPlayer(Long playerId) {
-        this.playerId = playerId;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
-    public void setTeam(Long teamId) {
-        this.teamId = teamId;
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     public String toString(){
-        return "{id: " + this.id + ", player: " + this.playerId + ", team: " + this.teamId + "}";
+        return "{id: " + this.id + ", player: " + this.player + ", team: " + this.team + "}";
     }
 }
