@@ -3,16 +3,12 @@ package nos.sportsteamsboot.client;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nos.sportsteamsboot.model.*;
-import nos.sportsteamsboot.service.PlayerService;
-import nos.sportsteamsboot.service.RosterService;
-import nos.sportsteamsboot.service.TeamService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -20,8 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Component
 public class NbaRestClient {
+    private static final String TEAM_INFO_URL = "https://stats.nba.com/stats/commonteamyears";
+
     private static final Map<String, String> TEAM_MAP = Map.ofEntries(
 //            Map.entry("Raptors", "1610612761"),
             Map.entry("Lakers", "1610612747"),
@@ -32,13 +30,31 @@ public class NbaRestClient {
     private ObjectMapper objectMapper;
     private RestTemplate restTemplate;
 
-    @Autowired private RosterService rosterService;
-    @Autowired private PlayerService playerService;
-    @Autowired private TeamService teamService;
-
     public NbaRestClient(RestTemplateBuilder builder){
         this.objectMapper = new ObjectMapper();
         this.restTemplate = builder.build();
+    }
+
+    public List<Long> fetchTeamIdList(){
+        HttpEntity<String> request = setupRequest();
+        ResponseEntity<String> response = this.restTemplate.exchange(TEAM_INFO_URL, HttpMethod.GET, request, String.class);
+
+    }
+
+    private List<Long> parseTeamIds(JsonNode responseJson){
+        JsonNode teamListJson = responseJson
+                .get("resultSets")
+                .get(0)
+                .get("rowSet");
+        List<Long> teamIds = new ArrayList<>();
+        for (JsonNode teamJson  : teamListJson){
+            Long teamId = teamJson.get(1).asLong();
+            String teamAbbrev = teamJson.get(4).textValue();
+            if (teamAbbrev != null) {
+                teamIds.add(teamId);
+            }
+        }
+        return teamIds;
     }
 
     public String getScores() throws Exception{
@@ -72,39 +88,39 @@ public class NbaRestClient {
         return results;
     }
 
-    public Team populateTeam(String teamName) throws Exception{
-        HttpEntity<String> request = setupRequest();
-        Map<String, String> urlParameters = Map.of("TeamId", TEAM_MAP.get(teamName));
-        ResponseEntity<String> response = this.restTemplate.exchange("https://stats.nba.com/stats/teamdetails?TeamId={TeamId}", HttpMethod.GET, request, String.class, urlParameters);
-        JsonNode responseJson = this.objectMapper.readTree(response.getBody());
-        Team team = parseTeam(responseJson);
-        teamService.insertTeam(team);
-        return team;
-    }
-
-    public List<Player> populatePlayers(String teamName) throws Exception{
-        HttpEntity<String> request = setupRequest();
-        Map<String, String> urlParameters = Map.of("TeamId", TEAM_MAP.get(teamName), "Season", SEASON);
-        ResponseEntity<String> response = this.restTemplate.exchange("https://stats.nba.com/stats/commonteamroster?TeamId={TeamId}&Season={Season}", HttpMethod.GET, request, String.class, urlParameters);
-        JsonNode responseJson = this.objectMapper.readTree(response.getBody());
-        List<Player> players = parsePlayers(responseJson);
-        for (Player player : players) {
-            playerService.insertPlayer(player);
-        }
-        return players;
-    }
-
-    public List<Roster> populateRosters(Team team, List<Player> players) {
-        List<Roster> rosters = new ArrayList<>();
-        for (Player player : players){
-            Roster roster = new Roster();
-            roster.setPlayer(player);
-            roster.setTeam(team);
-            rosterService.insertRoster(roster);
-            rosters.add(roster);
-        }
-        return rosters;
-    }
+//    public Team populateTeam(String teamName) throws Exception{
+//        HttpEntity<String> request = setupRequest();
+//        Map<String, String> urlParameters = Map.of("TeamId", TEAM_MAP.get(teamName));
+//        ResponseEntity<String> response = this.restTemplate.exchange("https://stats.nba.com/stats/teamdetails?TeamId={TeamId}", HttpMethod.GET, request, String.class, urlParameters);
+//        JsonNode responseJson = this.objectMapper.readTree(response.getBody());
+//        Team team = parseTeam(responseJson);
+//        teamService.insertTeam(team);
+//        return team;
+//    }
+//
+//    public List<Player> populatePlayers(String teamName) throws Exception{
+//        HttpEntity<String> request = setupRequest();
+//        Map<String, String> urlParameters = Map.of("TeamId", TEAM_MAP.get(teamName), "Season", SEASON);
+//        ResponseEntity<String> response = this.restTemplate.exchange("https://stats.nba.com/stats/commonteamroster?TeamId={TeamId}&Season={Season}", HttpMethod.GET, request, String.class, urlParameters);
+//        JsonNode responseJson = this.objectMapper.readTree(response.getBody());
+//        List<Player> players = parsePlayers(responseJson);
+//        for (Player player : players) {
+//            playerService.insertPlayer(player);
+//        }
+//        return players;
+//    }
+//
+//    public List<Roster> populateRosters(Team team, List<Player> players) {
+//        List<Roster> rosters = new ArrayList<>();
+//        for (Player player : players){
+//            Roster roster = new Roster();
+//            roster.setPlayer(player);
+//            roster.setTeam(team);
+//            rosterService.insertRoster(roster);
+//            rosters.add(roster);
+//        }
+//        return rosters;
+//    }
 
     public List<Game> populateGames(String teamName, Team team) throws Exception{
         HttpEntity<String> request = setupRequest();
@@ -115,19 +131,27 @@ public class NbaRestClient {
         return parseGames(responseJson);
     }
 
+
     private Team parseTeam(JsonNode responseJson){
-        JsonNode teamJson = responseJson.get("resultSets").get(0).get("rowSet").get(0);
-        String name = teamJson.get(2).asText();
+        JsonNode teamJson = responseJson
+                .get("resultSets")
+                .get(0)
+                .get("rowSet")
+                .get(0);
+        String name = teamJson.get(2).textValue();
         Team team = new Team();
         team.setName(name);
         return team;
     }
 
     private List<Player> parsePlayers(JsonNode responseJson){
-        JsonNode playerList = responseJson.get("resultSets").get(0).get("rowSet");
+        JsonNode playerListJson = responseJson
+                .get("resultSets")
+                .get(0)
+                .get("rowSet");
         List<Player> players = new ArrayList<>();
-        for (JsonNode playerJson : playerList){
-            String name = playerJson.get(3).asText();
+        for (JsonNode playerJson : playerListJson){
+            String name = playerJson.get(3).textValue();
             Player player = new Player();
             player.setName(name);
             players.add(player);
@@ -139,7 +163,7 @@ public class NbaRestClient {
         JsonNode gameList = responseJson.get("resultSets").get(0).get("rowSet");
         List<Game> games = new ArrayList<>();
         for (JsonNode gameJson : gameList){
-            Game game = new Game();//gameJson.get(3).asText()
+            Game game = new Game();//gameJson.get(3).textValue()
             games.add(game);
         }
         return games;
@@ -148,10 +172,10 @@ public class NbaRestClient {
     private String parseScore(JsonNode responseJson){
         JsonNode gameList = responseJson.get("payload").get("date").get("games");
         JsonNode game = gameList.get(0);
-        String homeTeam = game.get("homeTeam").get("profile").get("abbr").asText();
-        String awayTeam = game.get("awayTeam").get("profile").get("abbr").asText();
-        String homeScore = game.get("homeTeam").get("score").get("score").asText();
-        String awayScore = game.get("awayTeam").get("score").get("score").asText();
+        String homeTeam = game.get("homeTeam").get("profile").get("abbr").textValue();
+        String awayTeam = game.get("awayTeam").get("profile").get("abbr").textValue();
+        String homeScore = game.get("homeTeam").get("score").get("score").textValue();
+        String awayScore = game.get("awayTeam").get("score").get("score").textValue();
         return homeTeam + " vs " + awayTeam + ": " + homeScore + "-" + awayScore;
     }
 

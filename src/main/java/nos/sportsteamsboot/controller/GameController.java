@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/games")
 public class GameController {
-    @Autowired
-    GameService gameService;
+    @Autowired private GameService gameService;
 
     @GetMapping("")
     @JsonView(DetailedView.class)

@@ -15,7 +15,7 @@ import nos.sportsteamsboot.view.DetailedView;
 @RestController
 @RequestMapping("/players")
 public class PlayerController {
-    @Autowired PlayerService playerService;
+    @Autowired private PlayerService playerService;
 
     @GetMapping("")
     @JsonView(DetailedView.class)
