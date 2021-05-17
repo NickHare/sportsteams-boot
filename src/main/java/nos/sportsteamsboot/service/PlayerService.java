@@ -22,7 +22,7 @@ public class PlayerService {
     public Player getPlayer(Long id){
         Player p = null;
         try {
-            p = playerRepository.findById(id).orElse(Player.EmptyPlayer);
+            p = playerRepository.findById(id).get();
         } catch(Exception e){
             e.printStackTrace();
         }

@@ -23,7 +23,7 @@ public class TeamService {
     public Team getTeam(Long id){
         Team t = null;
         try {
-            t = teamRepository.findById(id).orElse(Team.EmptyTeam);
+            t = teamRepository.findById(id).get();
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -33,7 +33,7 @@ public class TeamService {
     public Team getTeamByName(String name){
         Team t = null;
         try {
-            t = teamRepository.findByName(name);
+            t = teamRepository.findByName(name).get();
         } catch(Exception e){
             e.printStackTrace();
         }

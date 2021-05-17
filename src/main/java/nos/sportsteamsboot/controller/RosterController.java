@@ -49,7 +49,7 @@ public class RosterController {
     @JsonView(DetailedView.class)
     public Map<String, List<BaseModel>> test(){
         try{
-            return restClient.getResults();
+            return null;//restClient.getResults();
         } catch (Exception e){
             e.printStackTrace();
         }

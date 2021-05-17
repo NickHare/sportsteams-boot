@@ -3,6 +3,9 @@ package nos.sportsteamsboot.repository;
 import nos.sportsteamsboot.model.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface TeamRepository extends JpaRepository<Team, Long> {
-    Team findByName(String name);
+    Optional<Team> findByName(String name);
+    Optional<Team> findByExternalId(String extId);
 }

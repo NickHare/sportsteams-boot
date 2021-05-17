@@ -1,6 +1,13 @@
 package nos.sportsteamsboot.config;
 
+import nos.sportsteamsboot.batch.NbaTeamItemProcessor;
+import nos.sportsteamsboot.batch.NbaTeamItemReader;
+import nos.sportsteamsboot.batch.NbaTeamItemWriter;
+import nos.sportsteamsboot.client.NbaRestClient;
+import nos.sportsteamsboot.model.Team;
+import nos.sportsteamsboot.repository.TeamRepository;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.*;
 import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
@@ -25,6 +32,9 @@ public class BatchConfig extends DefaultBatchConfigurer {
     @Autowired private JobOperator jobOperator;
     @Autowired private JobRegistry jobRegistry;
 
+    @Autowired private TeamRepository teamRepository;
+    @Autowired private NbaRestClient restClient;
+
     @Bean
     protected JobLauncher createJobLauncher() throws Exception{
         SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
@@ -37,12 +47,26 @@ public class BatchConfig extends DefaultBatchConfigurer {
     @Bean
     public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor() {
         JobRegistryBeanPostProcessor postProcessor = new JobRegistryBeanPostProcessor();
-        postProcessor.setJobRegistry(jobRegistry);
+        postProcessor.setJobRegistry(this.jobRegistry);
         return postProcessor;
     }
 
     @Bean
-    public Job rosterLoadJob(){
+    public Step teamLoadStep(){
+        return stepBuilderFactory
+                .get("teamLoad")
+                .<Team, Team>chunk(5)
+                .reader(new NbaTeamItemReader(this.restClient))
+                .processor(new NbaTeamItemProcessor(this.teamRepository))
+                .writer(new NbaTeamItemWriter(this.teamRepository))
+                .build();
+    }
 
+    @Bean
+    public Job rosterLoadJob(){
+        return jobBuilderFactory
+                .get("rosterLoad")
+                .start(teamLoadStep())
+                .build();
     }
 }
