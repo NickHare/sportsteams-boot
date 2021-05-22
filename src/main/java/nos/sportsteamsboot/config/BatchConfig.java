@@ -1,8 +1,8 @@
 package nos.sportsteamsboot.config;
 
-import nos.sportsteamsboot.batch.NbaTeamItemProcessor;
-import nos.sportsteamsboot.batch.NbaTeamItemReader;
-import nos.sportsteamsboot.batch.NbaTeamItemWriter;
+//import nos.sportsteamsboot.batch.NbaTeamItemProcessor;
+//import nos.sportsteamsboot.batch.NbaTeamItemReader;
+//import nos.sportsteamsboot.batch.NbaTeamItemWriter;
 import nos.sportsteamsboot.client.NbaRestClient;
 import nos.sportsteamsboot.model.Team;
 import nos.sportsteamsboot.repository.TeamRepository;
@@ -16,14 +16,25 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.batch.BatchProperties;
+import org.springframework.boot.autoconfigure.batch.JpaBatchConfigurer;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.orm.jpa.JpaDialect;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
 @Configuration
 @EnableBatchProcessing
-public class BatchConfig extends DefaultBatchConfigurer {
+public class BatchConfig extends JpaBatchConfigurer {
     @Autowired private JobBuilderFactory jobBuilderFactory;
     @Autowired private StepBuilderFactory stepBuilderFactory;
     @Autowired private JobLauncher jobLauncher;
@@ -34,9 +45,16 @@ public class BatchConfig extends DefaultBatchConfigurer {
 
     @Autowired private TeamRepository teamRepository;
     @Autowired private NbaRestClient restClient;
+    @Autowired private DataSource dataSource;
+    @Autowired private EntityManagerFactory entityManagerFactory;
+    @Autowired private PlatformTransactionManager transactionManager;
 
-    @Bean
-    protected JobLauncher createJobLauncher() throws Exception{
+    public BatchConfig(BatchProperties properties, DataSource dataSource, TransactionManagerCustomizers transactionManagerCustomizers, EntityManagerFactory entityManagerFactory) {
+        super(properties, dataSource, transactionManagerCustomizers, entityManagerFactory);
+    }
+
+
+    public JobLauncher createJobLauncher() throws Exception{
         SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
         jobLauncher.setJobRepository(this.jobRepository);
         jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
@@ -51,22 +69,22 @@ public class BatchConfig extends DefaultBatchConfigurer {
         return postProcessor;
     }
 
-    @Bean
-    public Step teamLoadStep(){
-        return stepBuilderFactory
-                .get("teamLoad")
-                .<Team, Team>chunk(5)
-                .reader(new NbaTeamItemReader(this.restClient))
-                .processor(new NbaTeamItemProcessor(this.teamRepository))
-                .writer(new NbaTeamItemWriter(this.teamRepository))
-                .build();
-    }
-
-    @Bean
-    public Job rosterLoadJob(){
-        return jobBuilderFactory
-                .get("rosterLoad")
-                .start(teamLoadStep())
-                .build();
-    }
+//    @Bean
+//    public Step teamLoadStep(){
+//        return stepBuilderFactory
+//                .get("teamLoad")
+//                .<Team, Team>chunk(5)
+//                .reader(new NbaTeamItemReader(this.restClient))
+//                .processor(new NbaTeamItemProcessor(this.teamRepository))
+//                .writer(new NbaTeamItemWriter(this.teamRepository))
+//                .build();
+//    }
+//
+//    @Bean
+//    public Job rosterLoadJob(){
+//        return jobBuilderFactory
+//                .get("rosterLoad")
+//                .start(teamLoadStep())
+//                .build();
+//    }
 }
