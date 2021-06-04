@@ -21,11 +21,14 @@ public class NbaRestClient {
     //URL Parameters
     private static final String LEAGUE_PARAM = "LeagueId";
     private static final String LEAGUE_VALUE = "00";
+    private static final String SEASON_PARAM = "Season";
+    private static final String SEASON_VALUE = "2020-21";
     private static final String TEAM_PARAM = "TeamId";
 
     //URL Templates
     private static final String TEAM_LIST_URL = "https://stats.nba.com/stats/commonteamyears?" + LEAGUE_PARAM + "={" + LEAGUE_PARAM + "}";
     private static final String TEAM_INFO_URL = "https://stats.nba.com/stats/teamdetails?" + TEAM_PARAM + "={"+ TEAM_PARAM + "}";
+    private static final String TEAM_PLAYER_INFO_URL = "https://stats.nba.com/stats/commonteamroster?" + SEASON_PARAM + "={"+ SEASON_PARAM + "}&"  + TEAM_PARAM + "={"+ TEAM_PARAM + "}";
 
     private static final Map<String, String> TEAM_MAP = Map.ofEntries(
 //            Map.entry("Raptors", "1610612761"),
@@ -64,9 +67,7 @@ public class NbaRestClient {
         for (JsonNode teamJson  : teamListJson){
             Long teamId = teamJson.get(1).asLong();
             String teamAbbrev = teamJson.get(4).textValue();
-            if (teamAbbrev != null) {
-                teamIds.add(teamId);
-            }
+            teamIds.add(teamId);
         }
         return teamIds;
     }
@@ -96,6 +97,37 @@ public class NbaRestClient {
         team.setExternalId(extId);
         team.setName(name);
         return team;
+    }
+
+
+    public List<Player> fetchTeamPlayers(Long teamId){
+        HttpEntity<String> request = setupRequest();
+        Map<String, String> urlParameters = Map.of(SEASON_PARAM, SEASON_VALUE, TEAM_PARAM, teamId.toString());
+        ResponseEntity<String> response = this.restTemplate.exchange(TEAM_PLAYER_INFO_URL, HttpMethod.GET, request, String.class, urlParameters);
+        try {
+            JsonNode responseJson =  this.objectMapper.readTree(response.getBody());
+            return parseTeamPlayers(responseJson);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private List<Player> parseTeamPlayers(JsonNode responseJson){
+        JsonNode teamPlayerListJson = responseJson
+                .get("resultSets")
+                .get(0)
+                .get("rowSet");
+        List<Player> teamPlayers = new ArrayList<>();
+        for (JsonNode teamPlayerJson: teamPlayerListJson){
+            String extId = teamPlayerJson.get(0).asText();
+            String name = teamPlayerJson.get(3).asText();
+            Player player = new Player();
+            player.setExternalId(extId);
+            player.setName(name);
+            teamPlayers.add(player);
+        }
+        return teamPlayers;
     }
 
     public String getScores() throws Exception{

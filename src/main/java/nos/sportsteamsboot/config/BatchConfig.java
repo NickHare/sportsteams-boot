@@ -3,6 +3,7 @@ package nos.sportsteamsboot.config;
 //import nos.sportsteamsboot.batch.NbaTeamItemProcessor;
 //import nos.sportsteamsboot.batch.NbaTeamItemReader;
 //import nos.sportsteamsboot.batch.NbaTeamItemWriter;
+import nos.sportsteamsboot.batch.NbaTeamLoadTasklet;
 import nos.sportsteamsboot.client.NbaRestClient;
 import nos.sportsteamsboot.model.Team;
 import nos.sportsteamsboot.repository.TeamRepository;
@@ -69,22 +70,24 @@ public class BatchConfig extends JpaBatchConfigurer {
         return postProcessor;
     }
 
-//    @Bean
-//    public Step teamLoadStep(){
-//        return stepBuilderFactory
-//                .get("teamLoad")
-//                .<Team, Team>chunk(5)
-//                .reader(new NbaTeamItemReader(this.restClient))
-//                .processor(new NbaTeamItemProcessor(this.teamRepository))
-//                .writer(new NbaTeamItemWriter(this.teamRepository))
-//                .build();
-//    }
-//
-//    @Bean
-//    public Job rosterLoadJob(){
-//        return jobBuilderFactory
-//                .get("rosterLoad")
-//                .start(teamLoadStep())
-//                .build();
-//    }
+    @Bean
+    public Step teamLoadStep(){
+        return stepBuilderFactory
+                .get("teamLoad")
+                .tasklet(teamLoadTasklet())
+                .build();
+    }
+
+    @Bean
+    public Job rosterLoadJob(){
+        return jobBuilderFactory
+                .get("rosterLoad")
+                .start(teamLoadStep())
+                .build();
+    }
+
+    @Bean
+    public NbaTeamLoadTasklet teamLoadTasklet(){
+        return new NbaTeamLoadTasklet();
+    }
 }

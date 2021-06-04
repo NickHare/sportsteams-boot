@@ -1,6 +1,7 @@
 package nos.sportsteamsboot;
 
 import nos.sportsteamsboot.client.NbaRestClient;
+import nos.sportsteamsboot.model.Player;
 import nos.sportsteamsboot.model.Team;
 import nos.sportsteamsboot.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,19 +22,22 @@ public class TestRunner implements CommandLineRunner {
     @Autowired private ApplicationContext ctx;
 
     public void run(String... args ){
-//        List<Long> teamIds = nbaClient.fetchTeamIdList();
-//        List<Team> teams = new ArrayList<>();
-//        for (Long teamId : teamIds) {
+        List<Long> teamIds = nbaClient.fetchTeamIdList();
+        List<Team> teams = new ArrayList<>();
+        for (Long teamId : teamIds) {
 //            teams.add(nbaClient.fetchTeam(teamId));
-//        }
-        String[] beans = Arrays.stream(ctx.getBeanDefinitionNames()).filter((String s) -> {return s.contains("ransaction");}).toArray(String[]::new);
-        String[] beans2 = Arrays.stream(ctx.getBeanDefinitionNames()).filter((String s) -> {return s.contains("ntity");}).toArray(String[]::new);
-        String[] beans3 = Arrays.stream(ctx.getBeanDefinitionNames()).filter((String s) -> {return s.contains("Jpa");}).toArray(String[]::new);
-        Object tx = ctx.getBean("transactionManager");
-        Object emf = ctx.getBean("entityManagerFactory");
-        Object ds = ctx.getBean("dataSource");
+            List<Player> players = this.nbaClient.fetchTeamPlayers(teamId);
+            System.out.println(players);
+        }
+
+//        String[] beans = Arrays.stream(ctx.getBeanDefinitionNames()).filter((String s) -> {return s.contains("ransaction");}).toArray(String[]::new);
+//        String[] beans2 = Arrays.stream(ctx.getBeanDefinitionNames()).filter((String s) -> {return s.contains("ntity");}).toArray(String[]::new);
+//        String[] beans3 = Arrays.stream(ctx.getBeanDefinitionNames()).filter((String s) -> {return s.contains("Jpa");}).toArray(String[]::new);
+//        Object tx = ctx.getBean("transactionManager");
+//        Object emf = ctx.getBean("entityManagerFactory");
+//        Object ds = ctx.getBean("dataSource");
 //        Object jr = ctx.getBean("jobRepository");
-        Object tr = ctx.getBean("teamRepository");
+//        Object tr = ctx.getBean("teamRepository");
         return;
     }
 }
