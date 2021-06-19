@@ -19,15 +19,19 @@ import java.util.Set;
 
 @Entity
 public class Team extends BaseModel{
-    public static final Team EmptyTeam = new Team(null, null, "", null, null);
+    public static final Team EmptyTeam = new Team(null, null, "", "", null, null);
 
     @JsonView(PublicView.class)
     private String name;
 
+    @JsonView(PublicView.class)
+    private String abbreviation;
+
     public Team() {}
-    public Team(Long id, String externalId, String name, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
+    public Team(Long id, String externalId, String name, String abbreviation, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
         super(id, externalId, createdTimestamp, modifiedTimestamp);
         this.name = name;
+        this.abbreviation = abbreviation;
     }
     public Team(Team team){
         super(team);
@@ -37,14 +41,20 @@ public class Team extends BaseModel{
 
 
     public String getName() {
-        return name;
+        return this.name;
+    }
+    public String getAbbreviation() {
+        return this.abbreviation;
     }
 
     public void setName(String name) {
         this.name = name;
     }
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
+    }
 
     public String toString(){
-        return "{id: " + this.id + ", name: " + this.name + "}";
+        return "{id: " + this.id + ", name: " + this.name + ", abbreviation: " + this.abbreviation + "}";
     }
 }

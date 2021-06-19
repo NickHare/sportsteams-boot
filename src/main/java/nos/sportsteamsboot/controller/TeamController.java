@@ -22,7 +22,7 @@ public class TeamController {
     @GetMapping("/{id}")
     @JsonView(DetailedView.class)
     public Team getTeam(@PathVariable("id") Long id){
-        return teamService.getTeam(id);
+        return teamService.getTeam(id).orElse(null);
     }
 
     @PostMapping("")

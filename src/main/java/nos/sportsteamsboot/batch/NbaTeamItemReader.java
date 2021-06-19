@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 public class NbaTeamItemReader implements ItemReader<Team>{
     private static final Logger logger = LoggerFactory.getLogger(NbaTeamItemReader.class);
@@ -31,9 +32,9 @@ public class NbaTeamItemReader implements ItemReader<Team>{
     public Team read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         if (!teamIdList.isEmpty()){
             Long teamId = teamIdList.remove(0);
-            Team team = restClient.fetchTeam(teamId);
+            Optional<Team> team = restClient.fetchTeam(teamId);
             logger.info("Read Team: " + team.toString());
-            return team;
+            return team.get();
         }
         logger.info("Finished reading teams");
         return null;

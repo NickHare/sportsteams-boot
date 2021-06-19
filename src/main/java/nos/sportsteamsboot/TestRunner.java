@@ -22,13 +22,13 @@ public class TestRunner implements CommandLineRunner {
     @Autowired private ApplicationContext ctx;
 
     public void run(String... args ){
-        List<Long> teamIds = nbaClient.fetchTeamIdList();
-        List<Team> teams = new ArrayList<>();
-        for (Long teamId : teamIds) {
-//            teams.add(nbaClient.fetchTeam(teamId));
-            List<Player> players = this.nbaClient.fetchTeamPlayers(teamId);
-            System.out.println(players);
-        }
+//        List<Long> teamIds = nbaClient.fetchTeamIdList();
+//        List<Team> teams = new ArrayList<>();
+//        for (Long teamId : teamIds) {
+////            teams.add(nbaClient.fetchTeam(teamId));
+//            List<Player> players = this.nbaClient.fetchTeamPlayers(teamId);
+//            System.out.println(players);
+//        }
 
 //        String[] beans = Arrays.stream(ctx.getBeanDefinitionNames()).filter((String s) -> {return s.contains("ransaction");}).toArray(String[]::new);
 //        String[] beans2 = Arrays.stream(ctx.getBeanDefinitionNames()).filter((String s) -> {return s.contains("ntity");}).toArray(String[]::new);

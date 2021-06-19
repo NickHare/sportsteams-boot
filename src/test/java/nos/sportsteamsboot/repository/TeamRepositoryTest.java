@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -23,9 +22,9 @@ import java.util.Map;
 @Sql({"/destroy.sql", "/schema.sql", "/data.sql"})
 public class TeamRepositoryTest {
     public static final Team[] TEAMS = new Team[]{
-            new Team(1L, null, "Easy Company", null, null),
-            new Team(2L, null, "UnEasy Company", null, null),
-            new Team(3L, null, "Dragons", null, null),
+            new Team(1L, null, "Easy Company", null, null, null),
+            new Team(2L, null, "UnEasy Company", null , null, null),
+            new Team(3L, null, "Dragons", null , null, null),
     };
 
     public static final Map<Long, Team> TEAM_INITIAL_STATE = new HashMap<>();
@@ -58,7 +57,7 @@ public class TeamRepositoryTest {
 
     private static List<Team> teamsExpectingDataAccessException(){
         return List.of(
-                new Team(null, null, null, null, null)
+                new Team(null, null, null, null , null, null)
         );
     }
 

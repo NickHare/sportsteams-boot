@@ -11,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class NbaRestClient {
@@ -55,7 +52,7 @@ public class NbaRestClient {
         }catch(Exception e){
             e.printStackTrace();
         }
-        return null;
+        return new ArrayList<Long>();
     }
 
     private List<Long> parseTeamIds(JsonNode responseJson){
@@ -66,23 +63,24 @@ public class NbaRestClient {
         List<Long> teamIds = new ArrayList<>();
         for (JsonNode teamJson  : teamListJson){
             Long teamId = teamJson.get(1).asLong();
-            String teamAbbrev = teamJson.get(4).textValue();
+            String teamAbbrev = teamJson.get(4).asText();
             teamIds.add(teamId);
         }
         return teamIds;
     }
 
-    public Team fetchTeam(Long teamId){
+    public Optional<Team> fetchTeam(Long teamId){
         HttpEntity<String> request = setupRequest();
         Map<String, String> urlParameters = Map.of(TEAM_PARAM, teamId.toString());
         ResponseEntity<String> response = this.restTemplate.exchange(TEAM_INFO_URL, HttpMethod.GET, request, String.class, urlParameters);
+        Optional<Team> result = Optional.empty();
         try {
             JsonNode responseJson = this.objectMapper.readTree(response.getBody());
-            return parseTeam(responseJson);
+            result = Optional.of(parseTeam(responseJson));
         }catch(Exception e){
             e.printStackTrace();
         }
-        return null;
+        return result;
     }
 
     private Team parseTeam(JsonNode responseJson){
@@ -93,9 +91,11 @@ public class NbaRestClient {
                 .get(0);
         String extId = teamJson.get(0).asText();
         String name = teamJson.get(2).asText();
+        String abbreviation = teamJson.get(1).asText();
         Team team = new Team();
         team.setExternalId(extId);
         team.setName(name);
+        team.setAbbreviation(abbreviation);
         return team;
     }
 

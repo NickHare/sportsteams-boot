@@ -7,9 +7,11 @@ import nos.sportsteamsboot.model.Roster;
 import nos.sportsteamsboot.service.RosterService;
 import nos.sportsteamsboot.view.DetailedView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +19,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/rosters")
 public class RosterController {
-
     @Autowired
     RosterService rosterService;
 
@@ -48,12 +49,7 @@ public class RosterController {
     @GetMapping("/test")
     @JsonView(DetailedView.class)
     public Map<String, List<BaseModel>> test(){
-        try{
-            return null;//restClient.getResults();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        return null;
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "test");
     }
 
     @GetMapping("/scores")

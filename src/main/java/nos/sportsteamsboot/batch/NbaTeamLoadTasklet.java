@@ -13,6 +13,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 public class NbaTeamLoadTasklet implements Tasklet {
 
@@ -30,21 +31,20 @@ public class NbaTeamLoadTasklet implements Tasklet {
             logger.info("Fetching NBA TeamIds");
             this.teamIds = this.restClient.fetchTeamIdList();
             logger.info("Fetched NBA TeamIds: " + this.teamIds);
-            Thread.sleep(500);
         }
 
         for (Long teamId : this.teamIds){
-            Team existingTeam = this.teamService.getTeamByExternalId(teamId.toString());
-            if (existingTeam == null){
+            Optional<Team> existingTeam = this.teamService.getTeam(teamId);
+            if (!existingTeam.isPresent()){
                 logger.info("Fetching NBA Team with ExternalId: " + teamId);
-                Team fetchedTeam = this.restClient.fetchTeam(teamId);
+                Thread.sleep(500);
+                Optional<Team> fetchedTeam = this.restClient.fetchTeam(teamId);
                 logger.info("Fetched NBA Team: " + fetchedTeam);
-                Team insertedTeam = this.teamService.insertTeam(fetchedTeam);
+                Team insertedTeam = this.teamService.insertTeam(fetchedTeam.get());
                 logger.info("Fetched NBA Team: " + insertedTeam);
             } else{
                 logger.info("Team already exists with that ExternalId. Skipped existing Team: " + existingTeam);
             }
-            Thread.sleep(500);
         }
         return RepeatStatus.FINISHED;
     }

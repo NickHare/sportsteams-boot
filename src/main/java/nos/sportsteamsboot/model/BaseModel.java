@@ -67,4 +67,13 @@ public abstract class BaseModel {
         this.modifiedTimestamp = modifiedTimestamp;
     }
 
+    public boolean isIdentical(BaseModel other){
+        return (this.id == other.id && this.externalId == other.externalId && this.createdTimestamp == other.createdTimestamp && this.modifiedTimestamp == other.modifiedTimestamp);
+    }
+
+//    public abstract boolean isEqual(BaseModel other);
+
+    public boolean isSame(BaseModel other){
+        return (this.id == other.id && this.externalId == other.externalId);
+    }
 }
