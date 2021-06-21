@@ -72,9 +72,9 @@ public class NbaRestClient {
     public Optional<Team> fetchTeam(Long teamId){
         HttpEntity<String> request = setupRequest();
         Map<String, String> urlParameters = Map.of(TEAM_PARAM, teamId.toString());
-        ResponseEntity<String> response = this.restTemplate.exchange(TEAM_INFO_URL, HttpMethod.GET, request, String.class, urlParameters);
         Optional<Team> result = Optional.empty();
         try {
+            ResponseEntity<String> response = this.restTemplate.exchange(TEAM_INFO_URL, HttpMethod.GET, request, String.class, urlParameters);
             JsonNode responseJson = this.objectMapper.readTree(response.getBody());
             result = Optional.of(parseTeam(responseJson));
         }catch(Exception e){
@@ -99,18 +99,17 @@ public class NbaRestClient {
         return team;
     }
 
-
     public List<Player> fetchTeamPlayers(Long teamId){
         HttpEntity<String> request = setupRequest();
         Map<String, String> urlParameters = Map.of(SEASON_PARAM, SEASON_VALUE, TEAM_PARAM, teamId.toString());
-        ResponseEntity<String> response = this.restTemplate.exchange(TEAM_PLAYER_INFO_URL, HttpMethod.GET, request, String.class, urlParameters);
         try {
+            ResponseEntity<String> response = this.restTemplate.exchange(TEAM_PLAYER_INFO_URL, HttpMethod.GET, request, String.class, urlParameters);
             JsonNode responseJson =  this.objectMapper.readTree(response.getBody());
             return parseTeamPlayers(responseJson);
         }catch(Exception e){
             e.printStackTrace();
         }
-        return null;
+        return new ArrayList<Player>();
     }
 
     private List<Player> parseTeamPlayers(JsonNode responseJson){

@@ -24,6 +24,7 @@ CREATE TABLE roster (
     external_id VARCHAR(128),
     player_id BIGINT NOT NULL,
     team_id BIGINT NOT NULL,
+    current_roster BOOLEAN NOT NULL,
     created_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     modified_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT pk_roster PRIMARY KEY (id),

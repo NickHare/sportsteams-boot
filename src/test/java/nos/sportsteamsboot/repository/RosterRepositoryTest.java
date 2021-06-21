@@ -27,11 +27,11 @@ public class RosterRepositoryTest {
     public static final Player[] PLAYERS = PlayerRepositoryTest.PLAYERS;
     public static final Team[] TEAMS = TeamRepositoryTest.TEAMS;
     public static final Roster[] ROSTERS = new Roster[]{
-            new Roster(1L, null, PLAYERS[0],TEAMS[0], null, null),
-            new Roster(2L, null, PLAYERS[1],TEAMS[0], null, null),
-            new Roster(3L, null, PLAYERS[2],TEAMS[1], null, null),
-            new Roster(4L, null, PLAYERS[3],TEAMS[2], null, null),
-            new Roster(5L, null, PLAYERS[4],TEAMS[2], null, null),
+            new Roster(1L, null, PLAYERS[0], TEAMS[0], true, null, null),
+            new Roster(2L, null, PLAYERS[1], TEAMS[0], true, null, null),
+            new Roster(3L, null, PLAYERS[2], TEAMS[1], true, null, null),
+            new Roster(4L, null, PLAYERS[3], TEAMS[2], true, null, null),
+            new Roster(5L, null, PLAYERS[4], TEAMS[2], true, null, null),
     };
 
     public static final Map<Long, Roster> ROSTER_INITIAL_STATE = new HashMap<>();
@@ -70,7 +70,7 @@ public class RosterRepositoryTest {
     private static List<Roster> rostersExpectingDataAccessException(){
         return List.of(
                 Roster.EmptyRoster,
-                new Roster(null, null, null, null, null, null)
+                Roster.NullRoster
         );
     }
 

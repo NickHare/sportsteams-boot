@@ -10,7 +10,8 @@ import java.sql.Timestamp;
 
 @Entity
 public class Roster extends BaseModel{
-    public static final Roster EmptyRoster = new Roster(null, null, null, null, null, null);
+    public static final Roster EmptyRoster = new Roster(null, null, null, null, false, null, null);
+    public static final Roster NullRoster = new Roster(null, null, null, null, null, null, null);
 
     @JsonView(PublicView.class)
     @ManyToOne
@@ -20,16 +21,21 @@ public class Roster extends BaseModel{
     @ManyToOne
     private Team team;
 
+    @JsonView(PublicView.class)
+    private Boolean activeRoster;
+
     public Roster() {}
-    public Roster(Long id, String externalId, Player player, Team team, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
+    public Roster(Long id, String externalId, Player player, Team team, Boolean activeRoster, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
         super(id, externalId, createdTimestamp, modifiedTimestamp);
         this.player = player;
         this.team = team;
+        this.activeRoster = activeRoster;
     }
     public Roster(Roster roster){
         super(roster.id, roster.externalId, roster.createdTimestamp, roster.modifiedTimestamp);
         this.player = roster.player;
         this.team = roster.team;
+        this.activeRoster = roster.activeRoster;
     }
 
     public Player getPlayer() {
@@ -47,6 +53,6 @@ public class Roster extends BaseModel{
     }
 
     public String toString(){
-        return "{id: " + this.id + ", player: " + this.player + ", team: " + this.team + "}";
+        return "{id: " + this.id + ", player: " + this.player + ", team: " + this.team + ", activeRoster: " + this.activeRoster + "}";
     }
 }

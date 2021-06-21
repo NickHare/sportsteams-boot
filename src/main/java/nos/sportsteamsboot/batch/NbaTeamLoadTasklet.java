@@ -1,6 +1,7 @@
 package nos.sportsteamsboot.batch;
 
 import nos.sportsteamsboot.client.NbaRestClient;
+import nos.sportsteamsboot.model.Player;
 import nos.sportsteamsboot.model.Team;
 import nos.sportsteamsboot.repository.TeamRepository;
 import nos.sportsteamsboot.service.TeamService;
@@ -18,7 +19,6 @@ import java.util.Optional;
 public class NbaTeamLoadTasklet implements Tasklet {
 
     private static final Logger logger = LoggerFactory.getLogger(NbaTeamLoadTasklet.class);
-    private List<Long> teamIds;
 
     @Autowired private TeamService teamService;
     @Autowired private NbaRestClient restClient;
@@ -27,25 +27,45 @@ public class NbaTeamLoadTasklet implements Tasklet {
     }
 
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        if (this.teamIds == null){
-            logger.info("Fetching NBA TeamIds");
-            this.teamIds = this.restClient.fetchTeamIdList();
-            logger.info("Fetched NBA TeamIds: " + this.teamIds);
-        }
+        //Get all TeamIds from NBA API
+        logger.info("Fetching NBA TeamIds.");
+        List<Long> teamIds = this.restClient.fetchTeamIdList();
+        logger.info("Fetched NBA TeamIds: " + teamIds + ".");
 
-        for (Long teamId : this.teamIds){
-            Optional<Team> existingTeam = this.teamService.getTeam(teamId);
-            if (!existingTeam.isPresent()){
-                logger.info("Fetching NBA Team with ExternalId: " + teamId);
-                Thread.sleep(500);
-                Optional<Team> fetchedTeam = this.restClient.fetchTeam(teamId);
-                logger.info("Fetched NBA Team: " + fetchedTeam);
-                Team insertedTeam = this.teamService.insertTeam(fetchedTeam.get());
-                logger.info("Fetched NBA Team: " + insertedTeam);
-            } else{
-                logger.info("Team already exists with that ExternalId. Skipped existing Team: " + existingTeam);
+        for (Long teamId : teamIds){
+            Optional<Team> team = processTeam(teamId);
+            if (team.isPresent()) {
+                List<Player> players = processPlayers(teamId);
             }
         }
         return RepeatStatus.FINISHED;
+    }
+
+    private Optional<Team> processTeam(Long teamId) throws Exception{
+        Optional<Team> existingTeam = this.teamService.getTeam(teamId);
+        Optional<Team> processedTeam = Optional.empty();
+        if (existingTeam.isPresent()){
+            //Team exists in system, skip team
+            logger.info("Team with with that ExternalId " + teamId + " already exists. Skipped existing Team: " + existingTeam + ".");
+            processedTeam = existingTeam;
+        } else {
+            //Team does not exist in system, fetch and insert Team
+            Thread.sleep(500);
+            logger.info("Fetching NBA Team with ExternalId: " + teamId + ".");
+            Optional<Team> fetchedTeam = this.restClient.fetchTeam(teamId);
+            if (fetchedTeam.isEmpty()){
+                logger.info("Team with with that ExternalId " + teamId + " could not be fetched. Skipped Team.");
+                processedTeam = Optional.empty();
+            } else {
+                logger.info("Fetched NBA Team: " + fetchedTeam + ".");
+                processedTeam = Optional.of(this.teamService.insertTeam(fetchedTeam.get()));
+                logger.info("Inserted NBA Team: " + processedTeam + ".");
+            }
+        }
+        return processedTeam;
+    }
+
+    private List<Player> processPlayers(Long teamId){
+        List<Player> active
     }
 }
