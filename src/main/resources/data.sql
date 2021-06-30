@@ -7,7 +7,7 @@ INSERT INTO team (id, name) VALUES
 (1, 'Easy Company'),
 (2, 'UnEasy Company');
 
-INSERT INTO roster (id, player_id, team_id, current_roster) VALUES
+INSERT INTO roster (id, player_id, team_id, active) VALUES
 (1, 1, 1, TRUE),
 (2, 2, 1, TRUE),
 (3, 3, 2, TRUE);

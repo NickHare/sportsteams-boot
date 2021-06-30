@@ -10,32 +10,14 @@ public class RosterService {
     @Autowired RosterRepository rosterRepository;
 
     public Roster insertRoster(Roster roster){
-        Roster r = null;
-        try {
-            r = rosterRepository.save(roster);
-        } catch(Exception e){
-            System.out.println(e);
-        }
-        return r;
+        return rosterRepository.save(roster);
     }
 
     public Roster getRoster(Long id){
-        Roster r = null;
-        try {
-            r = rosterRepository.findById(id).orElse(new Roster());
-        } catch(Exception e){
-            System.out.println(e);
-        }
-        return r;
+        return rosterRepository.findById(id).orElse(new Roster());
     }
 
     public Iterable<Roster> getRosters(){
-        Iterable<Roster> r = null;
-        try {
-            r = rosterRepository.findAll();
-        } catch(Exception e){
-            System.out.println(e);
-        }
-        return r;
+        return rosterRepository.findAll();
     }
 }

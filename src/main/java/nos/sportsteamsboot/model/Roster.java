@@ -3,12 +3,15 @@ package nos.sportsteamsboot.model;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import nos.sportsteamsboot.view.PublicView;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 
 import java.sql.Timestamp;
 
 @Entity
+@NamedEntityGraph(name = "roster", attributeNodes = {@NamedAttributeNode("player"), @NamedAttributeNode("team")})
 public class Roster extends BaseModel{
     public static final Roster EmptyRoster = new Roster(null, null, null, null, false, null, null);
     public static final Roster NullRoster = new Roster(null, null, null, null, null, null, null);
@@ -22,20 +25,20 @@ public class Roster extends BaseModel{
     private Team team;
 
     @JsonView(PublicView.class)
-    private Boolean activeRoster;
+    private Boolean active;
 
     public Roster() {}
-    public Roster(Long id, String externalId, Player player, Team team, Boolean activeRoster, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
+    public Roster(Long id, String externalId, Player player, Team team, Boolean active, Timestamp createdTimestamp, Timestamp modifiedTimestamp){
         super(id, externalId, createdTimestamp, modifiedTimestamp);
         this.player = player;
         this.team = team;
-        this.activeRoster = activeRoster;
+        this.active = active;
     }
     public Roster(Roster roster){
         super(roster.id, roster.externalId, roster.createdTimestamp, roster.modifiedTimestamp);
         this.player = roster.player;
         this.team = roster.team;
-        this.activeRoster = roster.activeRoster;
+        this.active = roster.active;
     }
 
     public Player getPlayer() {
@@ -53,6 +56,6 @@ public class Roster extends BaseModel{
     }
 
     public String toString(){
-        return "{id: " + this.id + ", player: " + this.player + ", team: " + this.team + ", activeRoster: " + this.activeRoster + "}";
+        return "{id: " + this.id + ", player: " + this.player + ", team: " + this.team + ", activeRoster: " + this.active + "}";
     }
 }

@@ -35,7 +35,7 @@ public class NbaTeamLoadTasklet implements Tasklet {
         for (Long teamId : teamIds){
             Optional<Team> team = processTeam(teamId);
             if (team.isPresent()) {
-                List<Player> players = processPlayers(teamId);
+//                List<Player> players = processPlayers(teamId);
             }
         }
         return RepeatStatus.FINISHED;
@@ -65,7 +65,7 @@ public class NbaTeamLoadTasklet implements Tasklet {
         return processedTeam;
     }
 
-    private List<Player> processPlayers(Long teamId){
-        List<Player> active
-    }
+//    private List<Player> processPlayers(Long teamId){
+//        List<Player> activePlayers = this.teamService.get
+//    }
 }
