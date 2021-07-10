@@ -37,7 +37,7 @@ public class RosterController {
     @GetMapping("/{id}")
     @JsonView(DetailedView.class)
     public Roster getRoster(@PathVariable("id") Long id){
-        return rosterService.getRoster(id);
+        return rosterService.getRoster(id).orElse(null);
     }
 
     @PostMapping("")
@@ -62,5 +62,4 @@ public class RosterController {
         }
         return null;
     }
-
 }

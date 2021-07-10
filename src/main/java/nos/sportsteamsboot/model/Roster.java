@@ -3,8 +3,6 @@ package nos.sportsteamsboot.model;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import nos.sportsteamsboot.view.PublicView;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 
@@ -36,16 +34,20 @@ public class Roster extends BaseModel{
     }
     public Roster(Roster roster){
         super(roster.id, roster.externalId, roster.createdTimestamp, roster.modifiedTimestamp);
+        if (team == null) throw new IllegalArgumentException("Parameter roster for Ream constructor cannot be null");
         this.player = roster.player;
         this.team = roster.team;
         this.active = roster.active;
     }
 
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
     public Team getTeam() {
-        return team;
+        return this.team;
+    }
+    public Boolean getActive(){
+        return this.active;
     }
 
     public void setPlayer(Player player) {
@@ -54,8 +56,11 @@ public class Roster extends BaseModel{
     public void setTeam(Team team) {
         this.team = team;
     }
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
 
     public String toString(){
-        return "{id: " + this.id + ", player: " + this.player + ", team: " + this.team + ", activeRoster: " + this.active + "}";
+        return "{id: " + this.id + ", externalId: " + this.externalId + ", player:" + this.player + ", team: " + this.team + ", activeRoster: " + this.active + "}";
     }
 }

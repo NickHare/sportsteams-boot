@@ -11,15 +11,13 @@ import java.util.Optional;
 
 @Repository
 public interface RosterRepository extends JpaRepository<Roster, Long>, JpaSpecificationExecutor<Roster> {
-    @EntityGraph(value="roster", type= EntityGraph.EntityGraphType.LOAD)
-    List<Roster> findAll();
 
     @EntityGraph(value="roster", type= EntityGraph.EntityGraphType.LOAD)
     Optional<Roster> findById(Long id);
 
     @EntityGraph(value="roster", type= EntityGraph.EntityGraphType.LOAD)
-    List<Roster> findByTeamIdAndActiveTrue(Long teamId);
+    List<Roster> findAll();
 
     @EntityGraph(value="roster", type= EntityGraph.EntityGraphType.LOAD)
-    List<Roster> findByActiveTrue();
+    List<Roster> findByTeamIdAndActiveTrue(Long teamId);
 }

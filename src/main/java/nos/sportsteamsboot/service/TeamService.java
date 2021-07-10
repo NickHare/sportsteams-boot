@@ -5,6 +5,7 @@ import nos.sportsteamsboot.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -12,23 +13,22 @@ public class TeamService {
     @Autowired TeamRepository teamRepository;
 
     public Team insertTeam(Team team){
-        Team t = teamRepository.save(team);
-        return t;
+        return this.teamRepository.save(team);
     }
 
     public Optional<Team> getTeam(Long id){
-        return teamRepository.findById(id);
+        return this.teamRepository.findById(id);
     }
 
     public Optional<Team> getTeamByName(String name){
-        return teamRepository.findByName(name);
+        return this.teamRepository.findByName(name);
     }
 
     public Optional<Team> getTeamByExternalId(String extId){
-        return teamRepository.findByName(extId);
+        return this.teamRepository.findByName(extId);
     }
 
-    public Iterable<Team> getTeams(){
-        return teamRepository.findAll();
+    public List<Team> getTeams(){
+        return this.teamRepository.findAll();
     }
 }

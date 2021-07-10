@@ -45,14 +45,16 @@ public class NbaRestClient {
     public List<Long> fetchTeamIdList(){
         HttpEntity<String> request = setupRequest();
         Map<String, String> urlParameters = Map.of(LEAGUE_PARAM, LEAGUE_VALUE);
+        List<Long> result = new ArrayList<>();
         ResponseEntity<String> response = this.restTemplate.exchange(TEAM_LIST_URL, HttpMethod.GET, request, String.class, urlParameters);
         try {
+            sleep();
             JsonNode responseJson = this.objectMapper.readTree(response.getBody());
-            return parseTeamIds(responseJson);
+            result = parseTeamIds(responseJson);
         }catch(Exception e){
             e.printStackTrace();
         }
-        return new ArrayList<Long>();
+        return result;
     }
 
     private List<Long> parseTeamIds(JsonNode responseJson){
@@ -64,7 +66,9 @@ public class NbaRestClient {
         for (JsonNode teamJson  : teamListJson){
             Long teamId = teamJson.get(1).asLong();
             String teamAbbrev = teamJson.get(4).asText();
-            teamIds.add(teamId);
+            if (teamAbbrev != null && !teamAbbrev.equals("null")){
+                teamIds.add(teamId);
+            }
         }
         return teamIds;
     }
@@ -74,6 +78,7 @@ public class NbaRestClient {
         Map<String, String> urlParameters = Map.of(TEAM_PARAM, teamId.toString());
         Optional<Team> result = Optional.empty();
         try {
+            sleep();
             ResponseEntity<String> response = this.restTemplate.exchange(TEAM_INFO_URL, HttpMethod.GET, request, String.class, urlParameters);
             JsonNode responseJson = this.objectMapper.readTree(response.getBody());
             result = Optional.of(parseTeam(responseJson));
@@ -102,14 +107,16 @@ public class NbaRestClient {
     public List<Player> fetchTeamPlayers(Long teamId){
         HttpEntity<String> request = setupRequest();
         Map<String, String> urlParameters = Map.of(SEASON_PARAM, SEASON_VALUE, TEAM_PARAM, teamId.toString());
+        List<Player> result = new ArrayList<>();
         try {
+            sleep();
             ResponseEntity<String> response = this.restTemplate.exchange(TEAM_PLAYER_INFO_URL, HttpMethod.GET, request, String.class, urlParameters);
             JsonNode responseJson =  this.objectMapper.readTree(response.getBody());
-            return parseTeamPlayers(responseJson);
+            result = parseTeamPlayers(responseJson);
         }catch(Exception e){
             e.printStackTrace();
         }
-        return new ArrayList<Player>();
+        return result;
     }
 
     private List<Player> parseTeamPlayers(JsonNode responseJson){
@@ -119,7 +126,7 @@ public class NbaRestClient {
                 .get("rowSet");
         List<Player> teamPlayers = new ArrayList<>();
         for (JsonNode teamPlayerJson: teamPlayerListJson){
-            String extId = teamPlayerJson.get(0).asText();
+            String extId = teamPlayerJson.get(14).asText();
             String name = teamPlayerJson.get(3).asText();
             Player player = new Player();
             player.setExternalId(extId);
@@ -136,7 +143,6 @@ public class NbaRestClient {
         JsonNode responseJson = this.objectMapper.readTree(response.getBody());
         return parseScore(responseJson);
     }
-
 //    public Map<String, List<BaseModel>> getResults() throws Exception {
 ////            response = this.restTemplate.exchange("https://stats.nba.com/stats/commonteamroster?Season=" + RestClient.SEASON + "&TeamID=" + teamId, HttpMethod.GET, request, String.class);
 ////            response = this.restTemplate.exchange("https://stats.nba.com/leaguegamefinder?PlayerOrTeam=T&TeamId=" + , HttpMethod.GET, request, String.class);
@@ -256,6 +262,15 @@ public class NbaRestClient {
         headers.set("Accept","application/json");
         headers.set("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0");
         return new HttpEntity<>(headers);
+    }
+
+
+    private void sleep(){
+        try{
+            Thread.sleep(500);
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
     }
 
 }

@@ -36,6 +36,6 @@ public class Player extends BaseModel {
     }
 
     public String toString(){
-        return "{id: " + this.id + ", name: " + this.name + "}";
+        return "{id: " + this.id + ", externalId: " + this.externalId + ", name: " + this.name + "}";
     }
 }

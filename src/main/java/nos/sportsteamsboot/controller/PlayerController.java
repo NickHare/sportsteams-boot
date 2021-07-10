@@ -26,7 +26,7 @@ public class PlayerController {
     @GetMapping("/{id}")
     @JsonView(DetailedView.class)
     public Player getPlayer(@PathVariable("id") Long id) {
-        return playerService.getPlayer(id);
+        return playerService.getPlayer(id).orElse(null);
     }
 
     @PostMapping("")

@@ -6,32 +6,30 @@ import nos.sportsteamsboot.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class PlayerService {
     @Autowired PlayerRepository playerRepository;
 
     public Player insertPlayer(Player player){
-        Player p = playerRepository.save(player);
-        return p;
+        return this.playerRepository.save(player);
     }
 
-    public Player getPlayer(Long id){
-        Player p = playerRepository.findById(id).get();
-        return p;
+    public Optional<Player> getPlayer(Long id){
+        return this.playerRepository.findById(id);
     }
 
-    public Player getPlayerByName(String name){
-        Player p = playerRepository.findByName(name).orElse(null);
-        return p;
+    public Optional<Player> getPlayerByName(String name){
+        return this.playerRepository.findByName(name);
     }
 
-    public Player getPlayerByExternalId(String extId){
-        Player p = playerRepository.findByName(extId).orElse(null);
-        return p;
+    public Optional<Player> getPlayerByExternalId(String extId){
+        return this.playerRepository.findByName(extId);
     }
 
-    public Iterable<Player> getPlayers(){
-        Iterable<Player> p = playerRepository.findAll();
-        return p;
+    public List<Player> getPlayers(){
+        return this.playerRepository.findAll();
     }
 }
