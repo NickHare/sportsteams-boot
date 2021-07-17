@@ -48,7 +48,7 @@ public class NbaTeamLoadTasklet implements Tasklet {
         Optional<Team> fetchedTeam;
         Optional<Team> processedTeam = Optional.empty();
 
-        existingTeam = this.teamService.getTeam(teamId);
+        existingTeam = this.teamService.getTeamByExternalId(String.valueOf(teamId));
         if (existingTeam.isPresent()){
             //Team exists in system, skip team
             logger.info("Team with with that ExternalId " + teamId + " already exists. Skipped existing Team: " + existingTeam.get() + ".");
@@ -61,13 +61,14 @@ public class NbaTeamLoadTasklet implements Tasklet {
                 logger.info("Team with with that ExternalId " + teamId + " could not be fetched. Skipped Team.");
             } else {
                 processedTeam = Optional.of(this.teamService.insertTeam(fetchedTeam.get()));
-                logger.info("Fetched and inserted NBA Team with ExternalId: " + teamId + ". Team: " + processedTeam + ".");
+                logger.info("Fetched and inserted NBA Team with ExternalId: " + teamId + ". Team: " + processedTeam.get() + ".");
             }
         }
         return processedTeam;
     }
 
-    private List<Roster> processTeamPlayers(Team team){
+    private List<List<Roster>> processTeamPlayers(Team team) {
+        List<List<Roster>> results;
         List<Player> activePlayers;
         List<Roster> existingActiveRosters;
         List<Roster> activeRosters = new ArrayList<>();
@@ -82,14 +83,48 @@ public class NbaTeamLoadTasklet implements Tasklet {
 
         existingActiveRosters = this.rosterService.getActiveRostersByTeam(team);
         existingActiveRosters.sort(rosterComparator);
+        existingActiveRosters.stream().filter((Roster r) -> (r == null || r.getPlayer() == null ||))
         logger.info("Retrieved Active NBA Rosters for Team: " + team + ". Rosters: " + existingActiveRosters + ".");
+
+        int activePlayerIndex = 0;
+        int existingActiveRosterIndex = 0;
+
+        while (activePlayerIndex < activePlayers.size() && activePlayers.get(activePlayerIndex) == null){
+            activePlayerIndex++;
+            logger.warn("Player from NBA API is null in some manner. Skipped Player: " + activePlayers.get + ".");
+        }
+        while (existingActiveRosterIndex < existingActiveRosters.size() &&
+            (existingActiveRoster  == null ||
+                existingActiveRosters.get(existingActiveRosterIndex).getPlayer() == null ||
+                existingActiveRosters.get(existingActiveRosterIndex).getTeam() == null
+            )
+        ){
+
+        }
+        while (activePlayerIndex < activePlayers.size() || existingActiveRosterIndex < existingActiveRosters.size()){
+
+        }
 
         Iterator<Player> activePlayersIterator = activePlayers.iterator();
         Iterator<Roster> existingActiveRostersIterator = existingActiveRosters.iterator();
 
+        while (activePlayersIterator.hasNext() || existingActiveRostersIterator.hasNext()){
+            if (!activePlayersIterator.hasNext()){
+
+            }
+            activePlayer = activePlayersIterator.hasNext()? activePlayersIterator.next() : null;
+            activeExternalId = (activePlayer != null)? activePlayer.getExternalId() : null;
+
+            existingActiveRoster = existingActiveRostersIterator.hasNext()? existingActiveRostersIterator.next(): null;
+            existingActivePlayer = (existingActiveRoster != null)? existingActiveRoster.getPlayer() : null;
+            existingActiveExternalId = (existingActivePlayer != null)? existingActivePlayer.getExternalId() : null;
+            existingActiveRostersIterator.
+        }
+
         while (activePlayersIterator.hasNext() &&
-                ((activePlayer = activePlayersIterator.next()) == null || activePlayer.getExternalId() == null)
+                ((activePlayer = activePlayersIterator.next()) == null)
         ){
+            activePlayer = activePlayersIterator.next();
             activePlayersIterator.remove();
             logger.warn("Player from NBA API is null in some manner. Skipped Player: " + activePlayer + ".");
         }
@@ -107,9 +142,11 @@ public class NbaTeamLoadTasklet implements Tasklet {
 
         while (activePlayersIterator.hasNext() && existingActiveRostersIterator.hasNext()) {
             activePlayer = activePlayersIterator.next();
-            activeExternalId = activePlayer.getExternalId();
-
             existingActiveRoster = existingActiveRostersIterator.next();
+
+            if (activePlayer == null || activePlayer.getExternalId() == null)
+
+            activeExternalId = activePlayer.getExternalId();
             existingActivePlayer = existingActiveRoster.getPlayer();
             existingActiveExternalId = existingActivePlayer.getExternalId();
 
@@ -119,7 +156,7 @@ public class NbaTeamLoadTasklet implements Tasklet {
             } else if (activeExternalId.compareTo(existingActiveExternalId) > 0){
                 existingActiveRoster.setActive(false);
                 this.rosterService.insertRoster(existingActiveRoster);
-                logger.info("Player with ExternalId: " + existingActiveExternalId + " is no longer on the official roster for the Team with ExternalId " + team.getExternalId() + ". Deactivated Roster: " + existingActiveRoster + ".");
+                logger.info("Player with ExternalId: " + existingActiveExternalId + " is no longer on the official roster for the Team with ExternalId: " + team.getExternalId() + ". Deactivated Roster: " + existingActiveRoster + ".");
             } else if (activeExternalId.compareTo(existingActiveExternalId) < 0){
                 activeRoster = new Roster(null, team.getExternalId() + "-" + existingActivePlayer.getExternalId(), existingActivePlayer, team, true, null, null);
                 this.rosterService.insertRoster(activeRoster);
@@ -139,7 +176,7 @@ public class NbaTeamLoadTasklet implements Tasklet {
             if (activePlayer == null && existingActiveRoster != null){
                 existingActiveRoster.setActive(false);
                 this.rosterService.insertRoster(existingActiveRoster);
-                logger.info("Player with ExternalId: " + existingActiveExternalId + " is no longer on the official roster for the Team with ExternalId " + team.getExternalId() + ". Deactivated Roster: " + existingActiveRoster + ".");
+                logger.info("Player with ExternalId: " + existingActiveExternalId + " is no longer on the official roster for the Team with ExternalId: " + team.getExternalId() + ". Deactivated Roster: " + existingActiveRoster + ".");
             } else if (existingActiveRoster == null && activePlayer != null){
                 this.playerService.insertPlayer(activePlayer);
                 activeRoster = new Roster(null, team.getExternalId() + "-" + activePlayer.getExternalId(), activePlayer, team, true, null, null);

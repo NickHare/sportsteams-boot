@@ -8,6 +8,8 @@ import nos.sportsteamsboot.client.NbaRestClient;
 import nos.sportsteamsboot.model.Team;
 import nos.sportsteamsboot.repository.TeamRepository;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.*;
@@ -19,6 +21,7 @@ import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.boot.autoconfigure.batch.JpaBatchConfigurer;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
@@ -79,9 +82,17 @@ public class BatchConfig extends JpaBatchConfigurer {
     }
 
     @Bean
+    @Qualifier("rosterLoad")
     public Job rosterLoadJob(){
         return jobBuilderFactory
                 .get("rosterLoad")
+                .incrementer((JobParameters p) -> {
+                    Long id = (p == null || p.isEmpty())? 1L : p.getLong("id") + 1;
+                    return new JobParametersBuilder()
+                            .addLong("id", id)
+                            .addLong("startTime", System.currentTimeMillis())
+                            .toJobParameters();
+                })
                 .start(teamLoadStep())
                 .build();
     }

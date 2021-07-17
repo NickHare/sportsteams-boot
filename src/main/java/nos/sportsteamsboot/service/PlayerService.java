@@ -26,7 +26,7 @@ public class PlayerService {
     }
 
     public Optional<Player> getPlayerByExternalId(String extId){
-        return this.playerRepository.findByName(extId);
+        return this.playerRepository.findByExternalId(extId);
     }
 
     public List<Player> getPlayers(){

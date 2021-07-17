@@ -25,7 +25,7 @@ public class TeamService {
     }
 
     public Optional<Team> getTeamByExternalId(String extId){
-        return this.teamRepository.findByName(extId);
+        return this.teamRepository.findByExternalId(extId);
     }
 
     public List<Team> getTeams(){

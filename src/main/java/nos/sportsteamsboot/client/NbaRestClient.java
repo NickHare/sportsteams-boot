@@ -138,7 +138,7 @@ public class NbaRestClient {
 
     public String getScores() throws Exception{
         HttpEntity<String> request = setupRequest2();
-        ResponseEntity<String> response = this.restTemplate.exchange("https://ca.global.nba.com/stats2/scores/daily.json?countryCode=CA&gameDate=2020-10-09&locale=en&tz=-5", HttpMethod.GET, request, String.class);
+        ResponseEntity<String> response = this.restTemplate.exchange("https://ca.global.nba.com/stats2/scores/daily.json?countryCode=CA&gameDate=2021-07-14&locale=en&tz=-5", HttpMethod.GET, request, String.class);
         System.out.println(response);
         JsonNode responseJson = this.objectMapper.readTree(response.getBody());
         return parseScore(responseJson);
@@ -237,10 +237,10 @@ public class NbaRestClient {
     private String parseScore(JsonNode responseJson){
         JsonNode gameList = responseJson.get("payload").get("date").get("games");
         JsonNode game = gameList.get(0);
-        String homeTeam = game.get("homeTeam").get("profile").get("abbr").textValue();
-        String awayTeam = game.get("awayTeam").get("profile").get("abbr").textValue();
-        String homeScore = game.get("homeTeam").get("score").get("score").textValue();
-        String awayScore = game.get("awayTeam").get("score").get("score").textValue();
+        String homeTeam = game.get("homeTeam").get("profile").get("abbr").asText();
+        String awayTeam = game.get("awayTeam").get("profile").get("abbr").asText();
+        String homeScore = game.get("homeTeam").get("score").get("score").asText();
+        String awayScore = game.get("awayTeam").get("score").get("score").asText();
         return homeTeam + " vs " + awayTeam + ": " + homeScore + "-" + awayScore;
     }
 

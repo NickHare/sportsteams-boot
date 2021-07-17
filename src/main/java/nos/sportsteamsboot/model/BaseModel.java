@@ -37,14 +37,12 @@ public abstract class BaseModel {
     public BaseModel(BaseModel baseModel){
         if (baseModel == null) throw new IllegalArgumentException("Parameter baseModel for BaseModel constructor cannot be null");
         this.externalId = baseModel.externalId;
-        this.createdTimestamp = baseModel.createdTimestamp;
-        this.modifiedTimestamp = baseModel.modifiedTimestamp;
     }
 
     @JsonView(PublicView.class) public Long getId() {
         return id;
     }
-    @JsonView(DetailedView.class) public String getExternalId() {
+    @JsonView(PublicView.class) public String getExternalId() {
         return externalId;
     }
     @JsonView(DetailedView.class) public Timestamp getCreatedTimestamp() {

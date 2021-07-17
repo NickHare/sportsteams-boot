@@ -2,13 +2,12 @@ package nos.sportsteamsboot.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import nos.sportsteamsboot.client.NbaRestClient;
-import nos.sportsteamsboot.model.BaseModel;
 import nos.sportsteamsboot.model.Roster;
 import nos.sportsteamsboot.service.RosterService;
 import nos.sportsteamsboot.view.DetailedView;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,11 +18,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/rosters")
 public class RosterController {
-    @Autowired
-    RosterService rosterService;
 
     @Autowired
-    JdbcTemplate jt;
+    RosterService rosterService;
 
     @Autowired
     NbaRestClient restClient;
@@ -44,12 +41,6 @@ public class RosterController {
     @JsonView(DetailedView.class)
     public Roster postRoster(@RequestBody @Validated Roster roster){
         return rosterService.insertRoster(roster);
-    }
-
-    @GetMapping("/test")
-    @JsonView(DetailedView.class)
-    public Map<String, List<BaseModel>> test(){
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "test");
     }
 
     @GetMapping("/scores")
