@@ -34,7 +34,7 @@ public class Roster extends BaseModel{
     }
     public Roster(Roster roster){
         super(roster.id, roster.externalId, roster.createdTimestamp, roster.modifiedTimestamp);
-        if (team == null) throw new IllegalArgumentException("Parameter roster for Ream constructor cannot be null");
+        if (roster == null) throw new IllegalArgumentException("Parameter roster for Roster constructor cannot be null");
         this.player = roster.player;
         this.team = roster.team;
         this.active = roster.active;

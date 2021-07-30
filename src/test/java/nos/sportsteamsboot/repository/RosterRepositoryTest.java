@@ -142,5 +142,6 @@ public class RosterRepositoryTest {
         //Assertions for Roster
         PlayerRepositoryTest.assertPlayer(expectedRoster.getPlayer(), actualRoster.getPlayer());
         TeamRepositoryTest.assertTeam(expectedRoster.getTeam(), actualRoster.getTeam());
+        Assertions.assertEquals(expectedRoster.getActive(), actualRoster.getActive());
     }
 }

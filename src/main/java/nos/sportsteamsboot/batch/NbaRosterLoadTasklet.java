@@ -17,16 +17,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-public class NbaTeamLoadTasklet implements Tasklet {
+public class NbaRosterLoadTasklet implements Tasklet {
 
-    private static final Logger logger = LoggerFactory.getLogger(NbaTeamLoadTasklet.class);
+    private static final Logger logger = LoggerFactory.getLogger(NbaRosterLoadTasklet.class);
 
     @Autowired private PlayerService playerService;
     @Autowired private TeamService teamService;
     @Autowired private RosterService rosterService;
     @Autowired private NbaRestClient restClient;
 
-    public NbaTeamLoadTasklet(){
+    public NbaRosterLoadTasklet(){
     }
 
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -93,11 +93,11 @@ public class NbaTeamLoadTasklet implements Tasklet {
         //Pass over all null-ish active Players that were fetched from NBA
         while (activePlayerIndex < activePlayers.size() && isPlayerNullish(activePlayers.get(activePlayerIndex))){
             activePlayer = activePlayers.get(activePlayerIndex);
-            logger.warn("Player from NBA API is null in some manner. Skipped Player: " + activePlayer + ".");
             activePlayerIndex++;
+            logger.warn("Player from NBA API is null in some manner. Skipped Player: " + activePlayer + ".");
         }
 
-        //Remove any null-ish active Rosters that were retreieved from Storage
+        //Remove any null-ish active Rosters that were retrieved from Storage
         while (existingActiveRosterIndex < existingActiveRosters.size() && isRosterNullish(existingActiveRosters.get(existingActiveRosterIndex))){
             existingActiveRoster = existingActiveRosters.get(existingActiveRosterIndex);
             if (existingActiveRoster != null) {
@@ -105,7 +105,6 @@ public class NbaTeamLoadTasklet implements Tasklet {
                 this.rosterService.insertRoster(existingActiveRoster);
             }
             logger.warn("Roster from RosterService is null in some manner. Deactivated roster: " + existingActiveRoster + ".");
-            existingActiveRosterIndex++;
         }
 
         //Process any remaining active Players fetched/retrieved from NBA/Storage

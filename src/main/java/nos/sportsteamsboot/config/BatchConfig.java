@@ -1,11 +1,7 @@
 package nos.sportsteamsboot.config;
 
-//import nos.sportsteamsboot.batch.NbaTeamItemProcessor;
-//import nos.sportsteamsboot.batch.NbaTeamItemReader;
-//import nos.sportsteamsboot.batch.NbaTeamItemWriter;
-import nos.sportsteamsboot.batch.NbaTeamLoadTasklet;
+import nos.sportsteamsboot.batch.NbaRosterLoadTasklet;
 import nos.sportsteamsboot.client.NbaRestClient;
-import nos.sportsteamsboot.model.Team;
 import nos.sportsteamsboot.repository.TeamRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -19,7 +15,6 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
@@ -28,9 +23,6 @@ import org.springframework.boot.autoconfigure.transaction.TransactionManagerCust
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.orm.jpa.JpaDialect;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManagerFactory;
@@ -74,15 +66,20 @@ public class BatchConfig extends JpaBatchConfigurer {
     }
 
     @Bean
-    public Step teamLoadStep(){
+    public NbaRosterLoadTasklet rosterLoadTasklet(){
+        return new NbaRosterLoadTasklet();
+    }
+
+    @Bean
+    public Step rosterLoadStep(){
         return stepBuilderFactory
-                .get("teamLoad")
-                .tasklet(teamLoadTasklet())
+                .get("rosterLoad")
+                .tasklet(rosterLoadTasklet())
                 .build();
     }
 
     @Bean
-    @Qualifier("rosterLoad")
+    @Qualifier("rosterLoadJob")
     public Job rosterLoadJob(){
         return jobBuilderFactory
                 .get("rosterLoad")
@@ -93,12 +90,24 @@ public class BatchConfig extends JpaBatchConfigurer {
                             .addLong("startTime", System.currentTimeMillis())
                             .toJobParameters();
                 })
-                .start(teamLoadStep())
+                .start(rosterLoadStep())
                 .build();
     }
 
     @Bean
-    public NbaTeamLoadTasklet teamLoadTasklet(){
-        return new NbaTeamLoadTasklet();
+    @Qualifier("rosterLoad2Job")
+    public Job rosterLoad2Job(){
+        return jobBuilderFactory
+                .get("rosterLoad")
+                .incrementer((JobParameters p) -> {
+                    Long id = (p == null || p.isEmpty())? 1L : p.getLong("id") + 1;
+                    return new JobParametersBuilder()
+                            .addLong("id", id)
+                            .addLong("startTime", System.currentTimeMillis())
+                            .toJobParameters();
+                })
+                .start(rosterLoadStep())
+                .build();
     }
+
 }
