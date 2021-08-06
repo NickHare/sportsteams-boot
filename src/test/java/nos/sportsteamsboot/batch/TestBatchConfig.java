@@ -19,15 +19,12 @@ public class TestBatchConfig {
     @Autowired private JobBuilderFactory jobBuilderFactory;
     @Autowired private StepBuilderFactory stepBuilderFactory;
 
-    @Bean
-    Qualifier("testRosterLoadJob")
-    public Job getTestRosterLoadJob({
-        return  
-    }
+    @Qualifier("testRosterLoadJob")
+    public Job testRosterLoadJob;
 
 
     @Bean
-    public JobLauncherTestUtils getJobLauncherTestUtils() {
+    public JobLauncherTestUtils getJobLauncherTestUtils(Job testRosterLoadJob) {
         return new JobLauncherTestUtils() {
             @Override
             @Autowired
@@ -51,7 +48,7 @@ public class TestBatchConfig {
     }
 
     @Bean
-    @Qualifier("rosterLoadJob")
+    @Qualifier("testRosterLoadJob")
     public Job rosterLoadJob(){
         return jobBuilderFactory
                 .get("rosterLoad")
@@ -66,20 +63,20 @@ public class TestBatchConfig {
                 .build();
     }
 
-    @Bean
-    @Qualifier("rosterLoad2Job")
-    public Job rosterLoad2Job(){
-        return jobBuilderFactory
-                .get("rosterLoad")
-                .incrementer((JobParameters p) -> {
-                    Long id = (p == null || p.isEmpty())? 1L : p.getLong("id") + 1;
-                    return new JobParametersBuilder()
-                            .addLong("id", id)
-                            .addLong("startTime", System.currentTimeMillis())
-                            .toJobParameters();
-                })
-                .start(rosterLoadStep())
-                .build();
-    }
+//    @Bean
+//    @Qualifier("testRosterLoad2Job")
+//    public Job rosterLoad2Job(){
+//        return jobBuilderFactory
+//                .get("rosterLoad")
+//                .incrementer((JobParameters p) -> {
+//                    Long id = (p == null || p.isEmpty())? 1L : p.getLong("id") + 1;
+//                    return new JobParametersBuilder()
+//                            .addLong("id", id)
+//                            .addLong("startTime", System.currentTimeMillis())
+//                            .toJobParameters();
+//                })
+//                .start(rosterLoadStep())
+//                .build();
+//    }
 
 }

@@ -94,20 +94,4 @@ public class BatchConfig extends JpaBatchConfigurer {
                 .build();
     }
 
-    @Bean
-    @Qualifier("rosterLoad2Job")
-    public Job rosterLoad2Job(){
-        return jobBuilderFactory
-                .get("rosterLoad")
-                .incrementer((JobParameters p) -> {
-                    Long id = (p == null || p.isEmpty())? 1L : p.getLong("id") + 1;
-                    return new JobParametersBuilder()
-                            .addLong("id", id)
-                            .addLong("startTime", System.currentTimeMillis())
-                            .toJobParameters();
-                })
-                .start(rosterLoadStep())
-                .build();
-    }
-
 }
