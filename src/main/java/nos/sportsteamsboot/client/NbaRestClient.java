@@ -19,7 +19,7 @@ public class NbaRestClient {
     private static final String LEAGUE_PARAM = "LeagueId";
     private static final String LEAGUE_VALUE = "00";
     private static final String SEASON_PARAM = "Season";
-    private static final String SEASON_VALUE = "2020-21";
+    private static final String SEASON_VALUE = "2021-22";
     private static final String TEAM_PARAM = "TeamId";
 
     //URL Templates

@@ -1,8 +1,6 @@
 package nos.sportsteamsboot.batch;
 
 
-import nos.sportsteamsboot.config.BatchConfig;
-//import nos.sportsteamsboot.batch.TestBatchConfig;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.batch.core.Job;
@@ -18,7 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 @SpringBatchTest
 @SpringBootTest
-@ContextConfiguration(classes=TestBatchConfig.class)
 public class NbaRosterLoadTest {
 
     @Autowired

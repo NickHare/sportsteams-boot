@@ -117,8 +117,7 @@ public class NbaRosterLoadTasklet implements Tasklet {
             existingActiveExternalId = (existingActivePlayer != null)? existingActivePlayer.getExternalId() : null;
 
             //Deactivate Rosters that NBA shows as no longer active from Storage
-            if ((activePlayer == null && existingActiveRoster != null) ||
-                ( existingActiveRoster != null && activeExternalId.compareTo(existingActiveExternalId) > 0)
+            if ((activePlayer == null && existingActiveRoster != null) || (existingActiveRoster != null && activeExternalId.compareTo(existingActiveExternalId) > 0)
             ){
                 existingActiveRoster.setActive(false);
                 this.rosterService.insertRoster(existingActiveRoster);
@@ -127,12 +126,17 @@ public class NbaRosterLoadTasklet implements Tasklet {
             }
             //Insert Rosters that NBA show as newly active into Storage
             else if ((existingActiveRoster == null && activePlayer != null) || activeExternalId.compareTo(existingActiveExternalId) < 0){
-                this.playerService.insertPlayer(activePlayer);
+                if (this.playerService.getPlayerByExternalId(activeExternalId).isEmpty()) {
+                    this.playerService.insertPlayer(activePlayer);
+                    logger.info("Player with ExternalId: " + activeExternalId + " has been created.");
+                } else{
+                    activePlayer = this.playerService.getPlayerByExternalId(activeExternalId).get();
+                }
                 activeRoster = new Roster(null, team.getExternalId() + "-" + activePlayer.getExternalId(), activePlayer, team, true, null, null);
                 this.rosterService.insertRoster(activeRoster);
                 activeRosters.add(activeRoster);
                 activePlayerIndex++;
-                logger.info("Player with ExternalId " + activeExternalId + " has been created and is now on the official roster for the Team with ExternalId " + team.getExternalId() + ". Inserted Roster: " + activeRoster + ".");
+                logger.info("Player with ExternalId: " + activeExternalId + " is now on the official roster for the Team with ExternalId " + team.getExternalId() + ". Inserted Roster: " + activeRoster + ".");
             }
             //Skip Rosters that are already currently active
             else if (activeExternalId.compareTo(existingActiveExternalId) == 0){
